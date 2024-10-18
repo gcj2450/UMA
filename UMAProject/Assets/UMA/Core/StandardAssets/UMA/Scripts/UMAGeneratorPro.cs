@@ -1,14 +1,15 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using static UMA.UMAData;
 
 namespace UMA
 {
-    /// <summary>
-    /// Utility class for generating texture atlases
-    /// </summary>
-    public class UMAGeneratorPro
+	/// <summary>
+	/// Utility class for generating texture atlases
+	/// </summary>
+	public class UMAGeneratorPro
 	{
 		private struct PackSize
 		{
@@ -35,11 +36,8 @@ namespace UMA
             public override int GetHashCode()
             {
 				if (overlayList != null)
-                {
-                    return overlayList.GetHashCode();
-                }
-
-                return base.GetHashCode();
+					return overlayList.GetHashCode();
+				return base.GetHashCode();
             }
 
             public bool Equals(GeneratedMaterialLookupKey other)
@@ -86,10 +84,9 @@ namespace UMA
 		{
 			if (umaMaterial.materialType == UMAMaterial.MaterialType.Atlas)
 			{
-                for (int i = 0; i < atlassedMaterials.Count; i++)
+				foreach (var atlassedMaterial in atlassedMaterials)
 				{
-                    GeneratedMaterial atlassedMaterial = atlassedMaterials[i];
-                    if (atlassedMaterial.umaMaterial == umaMaterial && atlassedMaterial.rendererAsset == renderer)
+					if (atlassedMaterial.umaMaterial == umaMaterial && atlassedMaterial.rendererAsset == renderer)
 					{
 						return atlassedMaterial;
 					}
@@ -114,7 +111,7 @@ namespace UMA
 			else
 			{
 				res.material = UnityEngine.Object.Instantiate(umaMaterial.material) as Material;
-				res.material.name = umaMaterial.material.name + "_Gen_" + UnityEngine.Random.Range(1,1000000000);
+				res.material.name = umaMaterial.material.name;
 #if UNITY_WEBGL
 			res.material.shader = Shader.Find(res.material.shader.name);
 #endif
@@ -130,26 +127,17 @@ namespace UMA
 		protected bool IsUVCoordinates(Rect r)
 		{
 			if (r.width == 0.0f || r.height == 0.0f)
-            {
-                return false;
-            }
+				return false;
 
-            if (r.width <= 1.0f && r.height <= 1.0f)
-            {
-                return true;
-            }
-
-            return false;
+			if (r.width <= 1.0f && r.height <= 1.0f)
+				return true;
+			return false;
 		}
 
 		protected Rect ScaleToBase(Rect r, Texture BaseTexture)
 		{
-			if (!BaseTexture)
-            {
-                return r;
-            }
-
-            float w = BaseTexture.width;
+			if (!BaseTexture) return r;
+			float w = BaseTexture.width;
 			float h = BaseTexture.height;
 
 			return new Rect(r.x * w, r.y * h, r.width * w, r.height * h);
@@ -178,16 +166,11 @@ namespace UMA
 			{
 				SlotData slot = slots[i];
 				if (slot == null)
-                {
-                    continue;
-                }
+					continue; 
+				if (slot.Suppressed)
+					continue;
 
-                if (slot.Suppressed)
-                {
-                    continue;
-                }
-
-                if (slot.isBlendShapeSource)
+				if (slot.isBlendShapeSource)
 				{
 					// Blendshape Source Slots are not combined. Instead, their blendshapes
 					// are added to the mesh at generation time.
@@ -221,19 +204,15 @@ namespace UMA
 					uniqueRenderers.Add(slot.rendererAsset);
 #else
 				if (!uniqueRenderers.Contains(slot.rendererAsset))
-                {
-                    uniqueRenderers.Add(slot.rendererAsset);
-                }
+					uniqueRenderers.Add(slot.rendererAsset);
 #endif
-                // Let's only add the default overlay if the slot has meshData and NO overlays
-                // This should be able to be removed if default overlay/textures are ever added to uma materials...
-                if ((slot.asset.meshData != null) && (slot.OverlayCount == 0))
+					// Let's only add the default overlay if the slot has meshData and NO overlays
+					// This should be able to be removed if default overlay/textures are ever added to uma materials...
+					if ((slot.asset.meshData != null) && (slot.OverlayCount == 0))
 				{
                     if (umaGenerator.defaultOverlaydata != null)
-                    {
                         slot.AddOverlay(umaGenerator.defaultOverlaydata);
-                    }
-                }
+				}
 
                 OverlayData overlay0 = slot.GetOverlay(0);
 				if ((slot.material != null) && (overlay0 != null))
@@ -323,11 +302,9 @@ namespace UMA
 						OverlayData overlay = slot.GetOverlay(j);
 						tempMaterialDefinition.overrides.Add(umaData.GetTextureOverrides(overlay.overlayName));
 						if (overlay == null)
-                        {
-                            continue;
-                        }
+							continue;
 
-                        if (IsUVCoordinates(overlay.rect))
+						if (IsUVCoordinates(overlay.rect))
 						{
 							tempMaterialDefinition.rects[overlayID] = ScaleToBase(overlay.rect, overlay0.textureArray[0]);
 							
@@ -388,21 +365,13 @@ namespace UMA
                     for (int oi = 0; oi < matfrag.overlayData.Length; oi++)
                     {
                         OverlayData od = matfrag.overlayData[oi];
-                        if (od == null)
-                        {
-                            continue;
-                        }
-
+                        if (od == null) continue;
                         if (od.colorData.HasProperties)
                         {
-                            for (int i = 0; i < od.colorData.PropertyBlock.shaderProperties.Count; i++)
+                            foreach (var s in od.colorData.PropertyBlock.shaderProperties)
                             {
-                                UMAProperty s = od.colorData.PropertyBlock.shaderProperties[i];
                                 if (isCompositor)
                                 {
-									// First, try to apply as a non-composited property
-                                    s.Apply(material, -1);
-									// Then, try to apply as an indexed composited property
                                     s.Apply(material, oi);
                                 }
                                 else
@@ -424,28 +393,13 @@ namespace UMA
                     UMAMaterial.ShaderParms parm = ugm.umaMaterial.shaderParms[j];
                     if (material.HasProperty(parm.ParameterName))
                     {
-						if (umaData.umaRecipe != null)
-						{
-							if (umaData.umaRecipe.sharedColors != null)
-							{
-								for (int i = 0; i < umaData.umaRecipe.sharedColors.Length; i++)
-								{
-									OverlayColorData ocd = umaData.umaRecipe.sharedColors[i];
-									if (ocd.name == parm.ColorName)
-									{
-										material.SetColor(parm.ParameterName, ocd.color);
-										break;
-									}
-								}
-							}
-							else
+                        foreach (OverlayColorData ocd in umaData.umaRecipe.sharedColors)
+                        {
+                            if (ocd.name == parm.ColorName)
                             {
-                                Debug.LogWarning("UMAData.UMARecipe.sharedColors is null");
+                                material.SetColor(parm.ParameterName, ocd.color);
+                                break;
                             }
-                        }
-						else
-						{
-                            Debug.LogWarning("UMAData.UMARecipe is null");
                         }
                     }
                 }
@@ -525,11 +479,6 @@ namespace UMA
                                 UMADefaultMeshCombiner.SetCompositingParameters(firstPass, cm);
                             }
 
-                            for(int k=0; k< cm.materialFragments.Count; k++)
-                            {
-                                var matfrag = cm.materialFragments[k];
-                                matfrag.slotData.submeshIndex = materialIndex;
-                            }
 
                             if (atlasses[i].umaMaterial.secondPass != null) 
                             {
@@ -598,10 +547,10 @@ namespace UMA
 			{
 				var generatedMaterial = atlassedMaterials[i];
 				if (generatedMaterial.umaMaterial.channels == null || generatedMaterial.umaMaterial.channels.Length == 0)
-                    continue;
+					continue;
 				
-
-                area.Width = umaGenerator.atlasResolution;
+				
+				area.Width = umaGenerator.atlasResolution;
 				area.Height = umaGenerator.atlasResolution;
 
 				generatedMaterial.materialFragments.Sort(comparer);
@@ -731,13 +680,13 @@ namespace UMA
 			{
 				var tempMaterialDef = material.materialFragments[atlasElementIndex];
 				if (tempMaterialDef.isRectShared)
-                    continue;
-                if (tempMaterialDef.isNoTextures)
-                    continue;
+					continue;
+				if (tempMaterialDef.isNoTextures)
+					continue;
 
-                if (tempMaterialDef.baseOverlay == null)
-                    continue;
-                if (tempMaterialDef.baseOverlay.textureList == null)
+				if (tempMaterialDef.baseOverlay == null)
+					continue;
+				if (tempMaterialDef.baseOverlay.textureList == null)
                 {
 					continue;
                 }
@@ -762,16 +711,14 @@ namespace UMA
 				lastPackSize.Width = width;
 				lastPackSize.Height = height;
 				if (tempMaterialDef.atlasRegion.xMax > lastPackSize.xMax)
-                {
-                    lastPackSize.xMax = (int)tempMaterialDef.atlasRegion.xMax;
-                }
+					lastPackSize.xMax = (int)tempMaterialDef.atlasRegion.xMax;
 
-                if (tempMaterialDef.atlasRegion.yMax > lastPackSize.yMax)
-                {
-                    lastPackSize.yMax = (int)tempMaterialDef.atlasRegion.yMax;
-                }
+				if (tempMaterialDef.atlasRegion.yMax > lastPackSize.yMax)
+					lastPackSize.yMax = (int)tempMaterialDef.atlasRegion.yMax;
 
-                if (tempMaterialDef.atlasRegion == nullRect)
+
+
+				if (tempMaterialDef.atlasRegion == nullRect)
 				{
 					if (umaGenerator.fitAtlas)
 					{
@@ -783,10 +730,8 @@ namespace UMA
 					else
 					{
 						if (Debug.isDebugBuild)
-                        {
-                            Debug.LogError("Atlas resolution is too small, not all textures will fit.", umaData.gameObject);
-                        }
-                    }
+							Debug.LogError("Atlas resolution is too small, not all textures will fit.", umaData.gameObject);
+					}
 				}
 			}
 			lastPackSize.success = true;
@@ -802,16 +747,12 @@ namespace UMA
 			{
 				var tempMaterialDef = material.materialFragments[atlasElementIndex];
 				if (tempMaterialDef.isRectShared)
-                {
-                    continue;
-                }
+					continue;
 
-                if (tempMaterialDef.isNoTextures)
-                {
-                    continue;
-                }
-
-                int width = Mathf.FloorToInt(tempMaterialDef.baseOverlay.textureList[0].width * material.resolutionScale.x * tempMaterialDef.slotData.overlayScale);
+				if (tempMaterialDef.isNoTextures)
+					continue;
+		
+				int width = Mathf.FloorToInt(tempMaterialDef.baseOverlay.textureList[0].width * material.resolutionScale.x * tempMaterialDef.slotData.overlayScale);
 				int height = Mathf.FloorToInt(tempMaterialDef.baseOverlay.textureList[0].height * material.resolutionScale.y * tempMaterialDef.slotData.overlayScale);
 				
 				// If either width or height are 0 we will end up with nullRect and potentially loop forever
@@ -834,10 +775,8 @@ namespace UMA
 					else
 					{
 						if (Debug.isDebugBuild)
-                        {
-                            Debug.LogError("Atlas resolution is too small, not all textures will fit.", umaData.gameObject);
-                        }
-                    }
+							Debug.LogError("Atlas resolution is too small, not all textures will fit.", umaData.gameObject);
+					}
 				}
 			}
 			return true;
@@ -918,9 +857,8 @@ namespace UMA
                 {
                     if (material.materialFragments != null)
                     {
-                        for (int i = 0; i < material.materialFragments.Count; i++)
+                        foreach (var fragment in material.materialFragments)
                         {
-                            MaterialFragment fragment = material.materialFragments[i];
                             SlotData sd = fragment.slotData;
                             sd.skinnedMeshRenderer = 0;
                             sd.submeshIndex = 0;

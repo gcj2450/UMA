@@ -1,22 +1,28 @@
+using UnityEngine;
+using System.IO;
+using System;
+using System.Collections.Generic;
+using UMA.CharacterSystem;
+
 #if UMA_ADDRESSABLES
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using AsyncOp = UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<System.Collections.Generic.IList<UnityEngine.Object>>;
 #endif
+using PackSlot = UMA.UMAPackedRecipeBase.PackedSlotDataV3;
+using SlotRecipes = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<UMA.UMATextRecipe>>;
+using RaceRecipes = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<UMA.UMATextRecipe>>>;
+using System.Linq;
+using System.Text;
 
 #if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.Animations;
 #if UMA_ADDRESSABLES
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UMA;
-using UnityEngine.Profiling;
-using System.Collections.Generic;
-using UnityEditor;
-using UMA.CharacterSystem;
-using UnityEngine;
-using System;
-using System.Text;
 #endif
 #endif
 
@@ -77,42 +83,42 @@ namespace UMA
                 EditorUtility.DisplayDialog("Warning", "Addressable Asset Settings not found", "OK");
                 return;
             }
-                List<AddressableAssetGroup> GroupsToDelete = new List<AddressableAssetGroup>();
+            List<AddressableAssetGroup> GroupsToDelete = new List<AddressableAssetGroup>();
 
-                foreach (var group in AddressableUtility.AddressableSettings.groups)
+            foreach (var group in AddressableUtility.AddressableSettings.groups)
+            {
+                if (IsUMAGroup(group.name))
                 {
-                    if (IsUMAGroup(group.name))
+                    if (OnlyEmpty)
                     {
-                        if (OnlyEmpty)
-                        {
-                            if (group.entries.Count > 0) continue;
-                        }
-                        GroupsToDelete.Add(group);
+                        if (group.entries.Count > 0) continue;
+                    }
+                    GroupsToDelete.Add(group);
+                }
+            }
+
+            float pos = 0.0f;
+            float inc = 1.0f / GroupsToDelete.Count;
+
+            foreach (AddressableAssetGroup group in GroupsToDelete)
+            {
+                int iPos = Mathf.CeilToInt(pos);
+                EditorUtility.DisplayProgressBar("Cleanup", "Removing " + group.Name, iPos);
+                if (group.name.Contains(SharedGroupName))
+                {
+                    List<AddressableAssetEntry> ItemsToClear = new List<AddressableAssetEntry>();
+                    ItemsToClear.AddRange(group.entries);
+                    foreach (AddressableAssetEntry ae in ItemsToClear)
+                    {
+                        group.RemoveAssetEntry(ae);
                     }
                 }
-
-                float pos = 0.0f;
-                float inc = 1.0f / GroupsToDelete.Count;
-
-                foreach (AddressableAssetGroup group in GroupsToDelete)
+                else
                 {
-                    int iPos = Mathf.CeilToInt(pos);
-                    EditorUtility.DisplayProgressBar("Cleanup", "Removing " + group.Name, iPos);
-                    if (group.name.Contains(SharedGroupName))
-                    {
-                        List<AddressableAssetEntry> ItemsToClear = new List<AddressableAssetEntry>();
-                        ItemsToClear.AddRange(group.entries);
-                        foreach (AddressableAssetEntry ae in ItemsToClear)
-                        {
-                            group.RemoveAssetEntry(ae);
-                        }
-                    }
-                    else
-                    {
-                        AddressableUtility.AddressableSettings.RemoveGroup(group);
-                    }
-                    pos += inc;
+                    AddressableUtility.AddressableSettings.RemoveGroup(group);
                 }
+                pos += inc;
+            }
 
             if (RemoveFlags)
             {
@@ -620,11 +626,7 @@ namespace UMA
             {
                 ClearAddressableFlags(t);
             }
-            if (AddressableUtility.AddressableSettings == null)
-            {
-                Debug.LogError("Addressable settings not found!");
-                return;
-            }
+
             AddressableAssetGroup sharedGroup = AddressableUtility.AddressableSettings.FindGroup(SharedGroupName);
             if (sharedGroup == null)
             {
@@ -844,59 +846,24 @@ namespace UMA
             }
         }
 
-
-        public void CleanupOrphans(string message)
+        public void CleanupOrphans(Type type)
         {
-            int slotsRemoved = CleanupOrphans(typeof(SlotDataAsset), false, message);
-            int overlaysRemoved = CleanupOrphans(typeof(OverlayDataAsset), false, message);
-
-            if (!string.IsNullOrEmpty(message))
-            {
-              Debug.LogWarning(message + "\nRemoved " + slotsRemoved + " orphaned slots and " + overlaysRemoved + " orphaned overlays.");
-            }
-            UMAAssetIndexer.Instance.ForceSave();
-        }
-
-
-        public int CleanupOrphans(Type type, bool forceSave = true,  string msg="")
-        {
-            int count = 0;
-
             var items = UMAAssetIndexer.Instance.GetAssetDictionary(type);
 
             List<string> toRemove = new List<string>();
             foreach (KeyValuePair<string, AssetItem> pair in items)
             {
-                // if not addressable, not resource, and not always loaded, then it's an orphan.
-                if (pair.Value.IsAddressable == false && pair.Value.IsResource == false && pair.Value.IsAlwaysLoaded == false)
+                if (pair.Value.IsAddressable == false && pair.Value.IsResource == false)
                 {
                     toRemove.Add(pair.Key);
                 }
             }
 
-            long totalsize = 0;
-
             foreach (var key in toRemove)
             {
-                if (items.ContainsKey(key))
-                {
-                    var item = items[key].CacheSerializedItem();
-                    totalsize += Profiler.GetRuntimeMemorySizeLong(item);
                 items.Remove(key);
-                    Debug.Log("Removing orphaned item: " + key);
-                    count++;
             }
-            }
-            if (forceSave)
-            {
             UMAAssetIndexer.Instance.ForceSave();
-        }
-            if (!string.IsNullOrEmpty(msg))
-            {
-                Debug.Log(msg + " Removed " + toRemove.Count + " orphaned items.");
-                Debug.Log(msg + " Total size: " + totalsize + " bytes.");
-            }
-            return toRemove.Count;
         }
 
         public List<AssetItem>  GetOrphans(Type type)
@@ -906,7 +873,7 @@ namespace UMA
 
             foreach (KeyValuePair<string, AssetItem> pair in items)
             {
-                if (pair.Value.IsAddressable == false && pair.Value.IsResource == false && pair.Value.IsAlwaysLoaded == false)
+                if (pair.Value.IsAddressable == false && pair.Value.IsResource == false)
                 {
                     returnval.Add(pair.Value);
                 }

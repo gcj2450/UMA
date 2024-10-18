@@ -39,7 +39,6 @@ namespace UMA
         public bool ClipPlaneFoldout;
         public bool isDeleted;
 #endif
-        public int expandAlongNormal = 0; // 8 digits of fixed point resolution. Multiply by 0.00001f to get the float value.
 
 #if !NOSMOOSH
 
@@ -69,15 +68,6 @@ namespace UMA
         public int vertexOffset;
         public Rect UVArea;
         public bool tempHidden;
-        public bool isDisabled = false;
-        public bool   UVRemapped
-        {
-            get
-            {
-                return UVSet != 0;
-            }
-        }
-        public int UVSet;    
 
         /// <summary>
         /// 
@@ -166,7 +156,7 @@ namespace UMA
             this.asset = asset;
             if (asset)
             {
-				tags = asset.tags.Length > 0 ? (string[])asset.tags.Clone() : new string[0];
+                tags = asset.tags;
                 Races = asset.Races;
                 overlayScale = asset.overlayScale;
                 rendererAsset = asset.RendererAsset;
@@ -191,7 +181,6 @@ namespace UMA
             smooshDistance = 0.001f;
             smooshInvertY = true;
             smooshInvertDist = true;
-            expandAlongNormal = 0;
         }
 
 
@@ -221,9 +210,8 @@ namespace UMA
             }
             // this feels like it would be better in a dictionary or hashtable
             // but I doubt there will be more than 1 tag, so we will go with this
-            for (int i = 0; i < tags.Length; i++)
+            foreach (string s in tags)
             {
-                string s = tags[i];
                 if (tagList.Contains(s))
                 {
                     return true;
@@ -240,9 +228,8 @@ namespace UMA
             }
             // this feels like it would be better in a dictionary or hashtable
             // but I doubt there will be more than 1 tag, so we will go with this
-            for (int i1 = 0; i1 < tags.Length; i1++)
+            foreach (string s in tags)
             {
-                string s = tags[i1];
                 for (int i = 0; i < tagList.Length; i++)
                 {
 
@@ -255,19 +242,6 @@ namespace UMA
             return false;
         }
 
-        public Dictionary<string, List<OverlayData>> GetOverlaysByTag(string tag)
-        {
-            Dictionary<string, List<OverlayData>> res = new Dictionary<string, List<OverlayData>>();
-            foreach (OverlayData od in overlayList)
-            {
-                if (od.HasTag(tag))
-                {
-                    res.Add(tag, new List<OverlayData>());
-                }
-                res[tag].Add(od);
-            }
-            return res;
-        }
 
         public bool HasTag(string tag)
         {
@@ -277,9 +251,8 @@ namespace UMA
             }
             // this feels like it would be better in a dictionary or hashtable
             // but I doubt there will be more than 1 tag, so we will go with this
-            for (int i = 0; i < tags.Length; i++)
+            foreach (string s in tags)
             {
-                string s = tags[i];
                 if (s == tag)
                 {
                     return true;
@@ -287,6 +260,36 @@ namespace UMA
             }
             return false;
         }
+
+        /*
+				private Int64 overlayHash;
+
+				public void CalculateOverlayHash()
+				{
+					overlayHash = 0;
+
+					foreach(OverlayData od in overlayList)
+					{
+						var toverlayHash = od.asset.GetHashCode();
+						var trecthash = od.rect.GetHashCode();
+						var tcolorhash = od.colorData.GetHashCode();
+
+						return ((overlay1.asset == overlay2.asset) &&
+								(overlay1.rect == overlay2.rect) &&
+								(overlay1.colorData == overlay2.colorData));
+					}
+				} 
+
+		/// <summary>
+		/// Property to return overlay hash so it is visible in debugger.
+		/// </summary>
+		public int OverlayHash
+        {
+            get
+            {
+				return (int) overlayHash;//GetOverlayList().GetHashCode();
+            }
+        }*/
 
         /// <summary>
         /// Deep copy of the SlotData.
@@ -310,15 +313,13 @@ namespace UMA
             res.vertexOffset = 0;
             res.UVArea.Set(0, 0, 1.0f, 1.0f);
             res.Races = Races;
-			res.tags = tags.Length > 0 ? (string[])tags.Clone() : new string[0]; 
+            res.tags = tags;
             res.blendShapeTargetSlot = blendShapeTargetSlot;
             res.smooshDistance = smooshDistance;
             res.overlayScale = overlayScale;
             res.overSmoosh = overSmoosh;
             res.swapTag = swapTag;
             res.isSwapSlot = isSwapSlot;
-            res.isDisabled = isDisabled;
-            res.expandAlongNormal = expandAlongNormal;
 
             res.smooshInvertX = smooshInvertX;
             res.smooshInvertY = smooshInvertY;
@@ -340,15 +341,10 @@ namespace UMA
             {
                 return;
             }
+           // List<OverlayData> newOverlays = new List<OverlayData>(overlayList);
 
-            //TODO: Research why recreating the overlayList results in index out of range errors
-            //      during the merge process.
-            //      This is a workaround to prevent the error. Unfortunately results in only one overlay being able to be removed at one time, which is not ideal but is far, far more likely to be the case than multiples needing to be removed from a single slot.
-            // List<OverlayData> newOverlays = new List<OverlayData>(overlayList);
-
-            for (int j = 0; j < HideTags.Count; j++)
+            foreach (var tag in HideTags)
             {
-                string tag = HideTags[j];
                 for (int i = 0; i < overlayList.Count; i++)
                 {
                     if (overlayList[i].asset.tags.Contains<string>(tag))
@@ -359,21 +355,14 @@ namespace UMA
                     }
                 }
             }
-#if DEBUG
-            //if (newOverlays.Count < 1)
-            //{
-            //    Debug.LogWarning("SANITY: RemoveOverlayTags resulted in no overlays for slot " + slotName);
-           // }
-#endif
             //overlayList = newOverlays;
         }
 
         public bool RemoveOverlay(params string[] names)
         {
             bool changed = false;
-            for (int j = 0; j < names.Length; j++)
+            foreach (var name in names)
             {
-                string name = names[j];
                 for (int i = 0; i < overlayList.Count; i++)
                 {
                     if (overlayList[i].overlayName == name)
@@ -390,12 +379,10 @@ namespace UMA
         public bool SetOverlayColor(Color32 color, params string[] names)
         {
             bool changed = false;
-            for (int i = 0; i < names.Length; i++)
+            foreach (var name in names)
             {
-                string name = names[i];
-                for (int j = 0; j < overlayList.Count; j++)
+                foreach (var overlay in overlayList)
                 {
-                    OverlayData overlay = overlayList[j];
                     if (overlay.overlayName == name)
                     {
                         overlay.colorData.color = color;
@@ -408,12 +395,10 @@ namespace UMA
 
         public OverlayData GetOverlay(params string[] names)
         {
-            for (int i = 0; i < names.Length; i++)
+            foreach (var name in names)
             {
-                string name = names[i];
-                for (int j = 0; j < overlayList.Count; j++)
+                foreach (var overlay in overlayList)
                 {
-                    OverlayData overlay = overlayList[j];
                     if (overlay.overlayName == name)
                     {
                         return overlay;
@@ -453,9 +438,8 @@ namespace UMA
         /// <param name="overlay">Overlay.</param>
         public OverlayData GetEquivalentOverlay(OverlayData overlay)
         {
-            for (int i = 0; i < overlayList.Count; i++)
+            foreach (OverlayData overlay2 in overlayList)
             {
-                OverlayData overlay2 = overlayList[i];
                 if (OverlayData.Equivalent(overlay, overlay2))
                 {
                     return overlay2;
@@ -471,9 +455,8 @@ namespace UMA
         /// <returns></returns>
         public OverlayData GetEquivalentUsedOverlay(OverlayData overlay)
         {
-            for (int i = 0; i < overlayList.Count; i++)
+            foreach (OverlayData overlay2 in overlayList)
             {
-                OverlayData overlay2 = overlayList[i];
                 if (OverlayData.EquivalentAssetAndUse(overlay, overlay2))
                 {
                     return overlay2;
@@ -544,10 +527,6 @@ namespace UMA
         /// <returns>The overlay list.</returns>
         public List<OverlayData> GetOverlayList()
         {
-            if (overlayList == null)
-            {
-                overlayList = new List<OverlayData>();
-            }
             return overlayList;
         }
 
@@ -570,10 +549,6 @@ namespace UMA
                 if (asset.material == null)
                 {
                     asset.material = UMAAssetIndexer.Instance.GetAsset<UMAMaterial>(asset.materialName);
-                    if (asset.material == null)
-                    {
-                        Debug.LogError("Unable to load material " + asset.materialName + " for slot " + asset.slotName);
-                    }
                 }
 
                 if (material == null)

@@ -16,11 +16,8 @@ MonoBehaviour:
   lastKnownAssetPath: Assets/UMA/Content/Core/HumanMale/DNA/DNANames/HumanMaleDynamicDnaAsset.asset
   lastKnownDuplicateAssetPath: Assets/UMA/Content/Core/HumanMale/DNA/DNANames/HumanMaleDynamicDnaAsset
     1.asset
-  lastKnownInstanceID: 30934
+  lastKnownInstanceID: 22652
   Names:
-  - skinGreenness
-  - skinBlueness
-  - skinRedness
   - height
   - headSize
   - headWidth
@@ -66,6 +63,5 @@ MonoBehaviour:
   - mouthSize
   - eyeRotation
   - eyeSize
-  - breastSize
   - eyeSpacing
-  - bodyFitness
+  - breastSize

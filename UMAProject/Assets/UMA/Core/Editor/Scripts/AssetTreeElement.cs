@@ -1,9 +1,10 @@
 using System;
+using UnityEngine;
 
 
 namespace UMA.Controls
 {
-    public enum Amount
+	public enum Amount
 	{
 		NotSet = -1,
 		None,
@@ -23,7 +24,6 @@ namespace UMA.Controls
 		public int IsAddrCount;
 		public int Keepcount;
 		public int IgnoreCount;
-        public int totalCount;
 
 
 		// detail item

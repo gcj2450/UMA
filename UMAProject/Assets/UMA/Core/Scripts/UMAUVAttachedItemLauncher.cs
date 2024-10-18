@@ -1,6 +1,11 @@
 #define USING_BAKEMESH
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using UMA;
 using UMA.CharacterSystem;
+using Unity.Collections;
 using UnityEngine;
 
 
@@ -23,9 +28,6 @@ namespace UMA
         public string boneName;
         public SlotData sourceSlot;
         public bool useMostestBone;
-        [Tooltip("The UV set to use for the attached item")]
-        [Range(0, 3)]
-        public int UVSet = 0;
 
         private GameObject prefabInstance;
         public int VertexNumber;
@@ -52,14 +54,13 @@ namespace UMA
             this.sourceSlot = slotData;
         }
 
-
-        public void Setup(UMAData umaData, bool Activate)
+        public void OnDnaAppliedBootstrapper(UMAData umaData)
         {
 #if UNITY_EDITOR
-            if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                return;
-            }
+			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) 
+			{
+				return;
+			}
 #endif
             Debug.Log($"DNA Applied {GetInstanceID()}");
 
@@ -69,12 +70,7 @@ namespace UMA
                 uvam = umaData.gameObject.AddComponent<UMAUVAttachedItemManager>();
                 uvam.Setup(umaData);
             }
-            uvam.AddAttachedItem(umaData, this, Activate);
-        }
-
-        public void OnDnaAppliedBootstrapper(UMAData umaData)
-        {
-            Setup(umaData, true);
+            uvam.AddAttachedItem(umaData, this);
         }
     }
 }

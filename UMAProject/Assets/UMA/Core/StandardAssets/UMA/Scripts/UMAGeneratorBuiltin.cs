@@ -16,6 +16,7 @@ namespace UMA
 
 		private LinkedList<UMAData> cleanUmas = new LinkedList<UMAData>();
 		private LinkedList<UMAData> dirtyUmas = new LinkedList<UMAData>();
+		private UMAGeneratorCoroutine activeGeneratorCoroutine;
 		public UMAMeshCombiner meshCombiner;
 		private HashSet<string> raceNames;
 
@@ -53,11 +54,11 @@ namespace UMA
 		public bool collectGarbage = true;
 		private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
+		[Tooltip("Generates a single UMA immediately with no coroutines. This is the fastest possible path.")]
+		public bool NoCoroutines=true;
+
 		[Tooltip("Automatically set blendshapes based on race")]
 		public bool autoSetRaceBlendshapes = false;
-
-		[Tooltip("Allow read on generated mesh data. Will increase memory usage.")]
-		public bool AllowReadFromMesh = false;
 
 		[NonSerialized]
 		public long ElapsedTicks;
@@ -70,10 +71,12 @@ namespace UMA
 
         public virtual void OnEnable()
 		{
+			activeGeneratorCoroutine = null;
 		}
 
 		public virtual void Awake()
 		{
+			activeGeneratorCoroutine = null;
 
 			if (atlasResolution == 0)
             {
@@ -143,6 +146,7 @@ namespace UMA
 
 		public override void Work()
 		{
+			UMAContextBase.IgnoreTag = ignoreTag;
 			if (!IsIdle())
 			{
                 // forceGarbageCollect is incremented every time the mesh/rig is built.
@@ -198,6 +202,9 @@ namespace UMA
 		public void RebuildAllRenderTextures()
 		{
 			var activeUmaData = umaData;
+			var storedGeneratorCoroutine = activeGeneratorCoroutine;
+
+
 			var iteratorNode = cleanUmas.First;
 			while (iteratorNode != null)
 			{
@@ -206,6 +213,7 @@ namespace UMA
 			}
 
 			umaData = activeUmaData;
+			activeGeneratorCoroutine = storedGeneratorCoroutine;
 		}
 
 		private void RebuildRenderTexture(UMAData data)
@@ -213,8 +221,30 @@ namespace UMA
 			var rt = data.GetFirstRenderTexture();
 			if (rt != null && !rt.IsCreated())
 			{
-				UMAGeneratorPro ugp = new UMAGeneratorPro();
-				ugp.ProcessTexture(this, umaData, true, InitialScaleFactor);
+				if (NoCoroutines)
+				{
+					UMAGeneratorPro ugp = new UMAGeneratorPro();
+					ugp.ProcessTexture(this, umaData, true, InitialScaleFactor);
+					TextureChanged++;
+                }
+                else
+				{
+					umaData = data;
+					TextureProcessBaseCoroutine textureProcessCoroutine;
+					textureProcessCoroutine = new TextureProcessPROCoroutine();
+					textureProcessCoroutine.Prepare(data, this);
+
+					activeGeneratorCoroutine = new UMAGeneratorCoroutine();
+					activeGeneratorCoroutine.Prepare(this, umaData, textureProcessCoroutine, true, InitialScaleFactor);
+
+					while (!activeGeneratorCoroutine.Work())
+                    {
+                        ;
+                    }
+
+                    activeGeneratorCoroutine = null; 
+				}
+
 				TextureChanged++;
 			}
 		}
@@ -225,10 +255,60 @@ namespace UMA
             {
                 return;
             }
-			umaData.SaveMountedItems();
+
+            GameObject holder = null;
+
+			foreach(Transform t in umaData.gameObject.transform)
+            {
+				if (t.name == "Holder")
+                {
+					holder = t.gameObject;
+                }
+            }
+
+			if (holder == null)
+            {
+				holder = new GameObject("Holder");
+				holder.tag = UMAContextBase.IgnoreTag;
+				holder.SetActive(false);
+				holder.transform.parent = umaData.gameObject.transform;
+			}
+			// walk through all the bones.
+			// if the tag has UMAContextBase.IgnoreTag, then 
+			// copy the transform
+			// copy the hash of the bone it came from  
+			// save the object by changing the parent.
+			// the parent object should be disabled so the children don't render.
+			// continue.
+			SaveBonesRecursively(umaData.umaRoot.transform, holder.transform);
+		}
+
+		public void SaveBonesRecursively(Transform bone, Transform holder)
+        {
+            List<Transform> childlist = new List<Transform>();
+
+			if (bone.CompareTag(UMAContextBase.IgnoreTag))
+			{
+				if (bone.parent != null)
+                {
+					umaData.AddSavedItem(bone);
+					bone.SetParent(holder, false);
+                }
+			}
+			else
+			{
+                foreach(Transform child in bone)
+                {
+                    childlist.Add(child);
+                }
+
+
+				foreach(var child in childlist)
+				{
+					SaveBonesRecursively(child,holder);
+				}
+			}
         }
-
-
 
 
 		public bool GenerateSingleUMA(UMAData data, bool fireEvents)
@@ -237,7 +317,8 @@ namespace UMA
             System.Diagnostics.Stopwatch gstopWatch = System.Diagnostics.Stopwatch.StartNew();
             gstopWatch.Start();
 #endif
-            if (data == null)
+            UMAContextBase.IgnoreTag = ignoreTag;
+			if (data == null)
             {
                 return true;
             }
@@ -252,6 +333,7 @@ namespace UMA
                 {
                     SaveMountedItems(umaData);
                 }
+
                 DestroyImmediate(umaData.umaRoot, false);
 				umaData.umaRoot = null;
 				umaData.RebuildSkeleton = false;
@@ -347,20 +429,18 @@ namespace UMA
 				{
 					RaceData[] races = UMAContextBase.Instance.GetAllRaces();
 					raceNames = new HashSet<string>();
-                    for (int i = 0; i < races.Length; i++)
+					foreach (RaceData r in races)
 					{
-                        RaceData r = races[i];
-                        raceNames.Add(r.raceName);
+						raceNames.Add(r.raceName);
 					}
 				}
 
 
 				if (raceNames != null && raceNames.Count > 0)
 				{
-                    for (int i1 = 0; i1 < renderers.Length; i1++)
+					foreach (SkinnedMeshRenderer smr in renderers)
 					{
-                        SkinnedMeshRenderer smr = renderers[i1];
-                        if (smr.sharedMesh.blendShapeCount > 0)
+						if (smr.sharedMesh.blendShapeCount > 0)
 						{
 							for (int i = 0; i < smr.sharedMesh.blendShapeCount;i++)
 							{
@@ -438,9 +518,8 @@ namespace UMA
         }
 
 
-		public virtual bool OldHandleDirtyUpdate(UMAData data)
+		public virtual bool HandleDirtyUpdate(UMAData data)
 		{
-            /*
 			UMAContextBase.IgnoreTag = ignoreTag;
 			if (data == null)
             {
@@ -533,8 +612,7 @@ namespace UMA
 			}
 
 			UMAReady();
-			*/
-            return true;
+			return true;
 		}
 
 		public virtual void OnDirtyUpdate()
@@ -542,34 +620,49 @@ namespace UMA
 			try
 			{
 				if (umaDirtyList.Count < 1)
-				{
-					return;
-				}
+                {
+                    return;
+                }
 
-				UMAData umaData = umaDirtyList[0];
-				try
-				{
-					GenerateSingleUMA(umaDirtyList[0], true);
-				}
-				catch (Exception ex)
-				{
-					if (Debug.isDebugBuild)
+                if (NoCoroutines)
+                {
+					UMAData umaData = umaDirtyList[0];
+					try
 					{
-						Debug.LogException(ex);
+						GenerateSingleUMA(umaDirtyList[0], true);
 					}
+					catch (Exception ex)
+                    {
+						if (Debug.isDebugBuild)
+                        {
+							Debug.LogException(ex);
+                        }
+                    }
+					umaDirtyList.RemoveAt(0);
+					umaData.MoveToList(cleanUmas);
+					umaData = null;
+					return;
+                }
+				if (HandleDirtyUpdate(umaDirtyList[0]))
+				{
+					umaDirtyList.RemoveAt(0);
+					umaData.MoveToList(cleanUmas);
+					umaData = null;
 				}
-				umaDirtyList.RemoveAt(0);
-				umaData.MoveToList(cleanUmas);
-				umaData = null;
-				return;
+				else if (fastGeneration && HandleDirtyUpdate(umaDirtyList[0]))
+				{
+					umaDirtyList.RemoveAt(0);
+					umaData.MoveToList(cleanUmas);
+					umaData = null;
+				}
 			}
 			catch (Exception ex)
 			{
 				if (Debug.isDebugBuild)
-				{
-					UnityEngine.Debug.LogException(ex);
-				}
-			}
+                {
+                    UnityEngine.Debug.LogException(ex);
+                }
+            }
 		}
 
 		private void UpdateUMAMesh(bool updatedAtlas)

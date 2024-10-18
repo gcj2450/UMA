@@ -35,10 +35,8 @@ namespace UMA
 			set
             {
 				if (value != null)
-                {
-                    _assetSlotName = value.slotName;
-                }
-                else
+					_assetSlotName = value.slotName;
+				else
 				{
 					_assetSlotName = "";
 				}
@@ -104,9 +102,7 @@ namespace UMA
                     return _triangleFlags.Length;
                 }
                 else
-                {
                     return 0;
-                }
             }
         }
 
@@ -137,16 +133,12 @@ namespace UMA
                 {
                     int total = 0;
                     for (int i = 0; i < _triangleFlags.Length; i++)
-                    {
                         total += _triangleFlags[i].Count;
-                    }
 
                     return total;
                 }
                 else
-                {
                     return 0;
-                }
             }
         }   
 
@@ -169,9 +161,7 @@ namespace UMA
                     return total;
                 }
                 else
-                {
                     return 0;
-                }
             }
         }
 
@@ -196,10 +186,8 @@ namespace UMA
         {
 			// _asset = null; // Let's not save this!
             if (_triangleFlags == null)
-            {
                 return;
-            }
-
+            
             if (TriangleCount > 0)
             {
                 _serializedFlags = new serializedFlags[_triangleFlags.Length];
@@ -218,9 +206,7 @@ namespace UMA
             if (_serializedFlags == null)
             {
                 if(Debug.isDebugBuild)
-                {
                     Debug.LogError("Serializing triangle flags failed!");
-                }
             }
         }
 
@@ -242,9 +228,7 @@ namespace UMA
 			}
             
             if (_serializedFlags == null)
-            {
                 return;
-            }
 
             if (_serializedFlags.Length > 0)
             {
@@ -272,9 +256,7 @@ namespace UMA
             }
 
             if (slot.meshData == null)
-            {
                 return;
-            }
 
             _triangleFlags = new BitArray[slot.meshData.subMeshCount];
             for (int i = 0; i < slot.meshData.subMeshCount; i++)
@@ -295,9 +277,7 @@ namespace UMA
             if (_triangleFlags == null)
             {
                 if(Debug.isDebugBuild)
-                {
                     Debug.LogError("Triangle Array not initialized!");
-                }
 
                 return;
             }
@@ -319,9 +299,7 @@ namespace UMA
             if (selection.Count != _triangleFlags[submesh].Count)
             {
                 if (Debug.isDebugBuild)
-                {
                     Debug.Log("SaveSelection: counts don't match!");
-                }
 
                 return;
             }
@@ -329,15 +307,11 @@ namespace UMA
             //Only works for submesh 0 for now
             _triangleFlags[submesh].SetAll(false);
             if (selection.Length == _triangleFlags[submesh].Length)
-            {
                 _triangleFlags[submesh] = new BitArray(selection);
-            }
             else
             {
                 if (Debug.isDebugBuild)
-                {
                     Debug.LogWarning("SaveSelection: counts don't match!");
-                }
             }
 
             #if UNITY_EDITOR
@@ -353,11 +327,8 @@ namespace UMA
         public static BitArray[] GenerateMask( List<MeshHideAsset> assets )
         {
             List<BitArray[]> flags = new List<BitArray[]>();
-            for (int i = 0; i < assets.Count; i++)
-            {
-                MeshHideAsset asset = assets[i];
+            foreach (MeshHideAsset asset in assets)
                 flags.Add(asset.triangleFlags);
-            }
 
             return CombineTriangleFlags(flags);
         }
@@ -370,10 +341,8 @@ namespace UMA
         public static BitArray[] CombineTriangleFlags( List<BitArray[]> flags)
         {
             if (flags == null || flags.Count <= 0)
-            {
                 return null;
-            }
-
+            
             BitArray[] final = new BitArray[flags[0].Length];
             for(int i = 0; i < flags[0].Length; i++)
             {

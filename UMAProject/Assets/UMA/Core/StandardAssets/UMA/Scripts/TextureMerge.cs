@@ -1,16 +1,18 @@
 #define UMA_ADVANCED_BLENDMODES
 
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 using System;
+using System.Data;
 
 namespace UMA
 {
-    /// <summary>
-    /// Utility class that sets up materials for atlasing.
-    /// </summary>
-    [ExecuteInEditMode]
+	/// <summary>
+	/// Utility class that sets up materials for atlasing.
+	/// </summary>
+	[ExecuteInEditMode]
 	[CreateAssetMenu(menuName = "UMA/Rendering/TextureMerge")]
 	public class TextureMerge : ScriptableObject
 	{
@@ -69,7 +71,6 @@ namespace UMA
                     if (textureMergeRects[i].mat == null)
                     {
                         textureMergeRects[i].mat = new Material(material);
-						textureMergeRects[i].mat.name = material.name + "_" + i;
                     }
 
                     textureMergeRects[i].advancedBlending = false;
@@ -154,7 +155,9 @@ namespace UMA
 					if (tr.advancedBlending)
 					{
                         // Create a temporary texture that is the size of the overlay rect in atlas space.
+						//Debug.Log("SRC texture location is " +tr.rect.ToString());
                         scratch = RenderTexture.GetTemporary((int)tr.rect.width, (int)tr.rect.height, 0, target.format, RenderTextureReadWrite.Linear);
+						//Debug.Log("Scratch texture is " + scratch.width + "x" + scratch.height + " " + scratch.format.ToString());
 
 						float fw = (float)width;
 						float fh = (float)height;
@@ -172,6 +175,7 @@ namespace UMA
                         // should be drawing to the scratch texture now
                         RenderTexture.active = scratch;
                         Graphics.DrawTexture(Destination, target, Src, 0, 0, 0, 0);
+						Debug.Log("Src Texture is "+Src.ToString());
 						RenderTexture.active = target;
                         //SaveRenderTexture(scratch, System.IO.Path.Combine(Application.dataPath, "scratch-after.png"));
                         //SaveRenderTexture(target, System.IO.Path.Combine(Application.dataPath, "target-after.png"));
@@ -211,11 +215,8 @@ namespace UMA
 		private void DrawRect(ref TextureMergeRect tr, bool sharperFitTextures)//, Material overrideMat = null)
 		{
 			if (tr.tex == null)
-            {
-                return;
-            }
-
-            if (tr.transform)
+				return;
+			if (tr.transform)
 			{
 				// rotate texture here?
 				GL.PushMatrix();
@@ -238,7 +239,7 @@ namespace UMA
 
 			if (tr.channelType == UMAMaterial.ChannelType.DiffuseTexture)
 			{
-				// Debug.Log($"Drawing = {tr.textureType} with texture {tr.mat.mainTexture.name} and shader {tr.mat.shader.name}");
+				//Debug.Log($"Drawing = {tr.textureType} with texture {tr.mat.mainTexture.name} and shader {tr.mat.shader.name}");
 			}
 
 			Graphics.DrawTexture(tr.rect, tr.tex, tr.mat);		
@@ -251,60 +252,45 @@ namespace UMA
 		public void PostProcess(RenderTexture destination, UMAMaterial.ChannelType channelType)
 		{
 			if (channelType == UMAMaterial.ChannelType.DiffuseTexture && diffusePostProcesses.Count == 0)
-            {
                 return;
-            }
-
-            if (channelType == UMAMaterial.ChannelType.NormalMap && normalPostProcesses.Count == 0)
-            {
-                return;
-            }
-
+			if (channelType == UMAMaterial.ChannelType.NormalMap && normalPostProcesses.Count == 0)
+				return;
             if (channelType == UMAMaterial.ChannelType.Texture && dataPostProcesses.Count == 0)
-            {
+				return;
+			if (channelType == UMAMaterial.ChannelType.DetailNormalMap && detailNormalPostProcesses.Count == 0)
                 return;
-            }
 
-            if (channelType == UMAMaterial.ChannelType.DetailNormalMap && detailNormalPostProcesses.Count == 0)
-            {
-                return;
-            }
-
-            var source = RenderTexture.GetTemporary(destination.width, destination.height, 0, destination.format, RenderTextureReadWrite.Linear);
+			var source = RenderTexture.GetTemporary(destination.width, destination.height, 0, destination.format, RenderTextureReadWrite.Linear);
 
 			switch (channelType)
 			{
 				case UMAMaterial.ChannelType.NormalMap:
-                    for (int i = 0; i < normalPostProcesses.Count; i++)
+					foreach (UMAPostProcess postProcess in normalPostProcesses)
 					{
-                        UMAPostProcess postProcess = normalPostProcesses[i];
-                        Graphics.Blit(destination, source);
+						Graphics.Blit(destination, source);
 						postProcess.Process(source, destination);
 					}
 					break;
 				case UMAMaterial.ChannelType.Texture:
-					for (int i = 0; i < dataPostProcesses.Count; i++)
-                    {
-                        UMAPostProcess postProcess = dataPostProcesses[i];
-                        Graphics.Blit(destination, source);
-                        postProcess.Process(source, destination);
-                    }
+					foreach (UMAPostProcess postProcess in dataPostProcesses)
+					{
+						Graphics.Blit(destination, source);
+						postProcess.Process(source, destination);
+					}
 					break;
 				case UMAMaterial.ChannelType.DiffuseTexture:
-					for (int i = 0; i < diffusePostProcesses.Count; i++)
-                    {
-                        UMAPostProcess postProcess = diffusePostProcesses[i];
-                        Graphics.Blit(destination, source);
-                        postProcess.Process(source, destination);
-                    }
+					foreach (UMAPostProcess postProcess in diffusePostProcesses)
+					{
+						Graphics.Blit(destination, source);
+						postProcess.Process(source, destination);
+					}
 					break;
 				case UMAMaterial.ChannelType.DetailNormalMap:
-					for (int i = 0; i < detailNormalPostProcesses.Count; i++)
-                    {
-                        UMAPostProcess postProcess = detailNormalPostProcesses[i];
-                        Graphics.Blit(destination, source);
-                        postProcess.Process(source, destination);
-                    }
+					foreach (UMAPostProcess postProcess in detailNormalPostProcesses)
+					{
+						Graphics.Blit(destination, source);
+						postProcess.Process(source, destination);
+					}
 					break;
 			}
 			RenderTexture.active = null;
@@ -319,18 +305,13 @@ namespace UMA
 		internal void EnsureCapacity(int moduleCount)
 		{
 			if (textureMergeRects != null && textureMergeRects.Length > moduleCount)
-            {
-                return;
-            }
+				return;
 
-            var oldTextureMerge = textureMergeRects;
+			var oldTextureMerge = textureMergeRects;
 			var newLength = 100;
-			while (newLength < moduleCount)
-            {
-                newLength *= 2;
-            }
+			while (newLength < moduleCount) newLength *= 2;
 
-            textureMergeRects = new TextureMerge.TextureMergeRect[newLength];
+			textureMergeRects = new TextureMerge.TextureMergeRect[newLength];
 			int idx = 0;
 			if (oldTextureMerge != null)
 			{
@@ -342,23 +323,19 @@ namespace UMA
 			for (; idx < newLength; idx++)
 			{
 				textureMergeRects[idx].mat = new Material(material);
-				textureMergeRects[idx].mat.name = material.name + "_" + idx;
 			}
 		}
 
 		private void SetupMaterial(ref TextureMergeRect textureMergeRect, UMAData.MaterialFragment source, int textureType)
 		{
 			if (source.isNoTextures)
-            {
-                return;
-            }
-
-            camBackgroundColor = source.GetMultiplier(0, textureType);
+				return;
+			camBackgroundColor = source.GetMultiplier(0, textureType);
 			camBackgroundColor.a = 0.0f;
 
 			if (textureType >= source.baseOverlay.textureList.Length)
 			{
-				Debug.Log("Out of range (" + textureType + ") on base overlay: " + source.overlayData[0].overlayName + " on slot: " + source.slotData.slotName);
+				Debug.LogWarning("Out of range (" + textureType + ") on base overlay: " + source.overlayData[0].overlayName + " on slot: " + source.slotData.slotName);
 				return;
 			}
 			textureMergeRect.tex = source.baseOverlay.textureList[textureType];
@@ -409,21 +386,16 @@ namespace UMA
 		public void SetupModule(UMAData.GeneratedMaterial atlas, int idx, int textureType)
 		{
 			var atlasElement = atlas.materialFragments[idx];
-			if (atlasElement.isRectShared)
-            {
-                return;
-            }
+			if (atlasElement.isRectShared) return;
 
-            height = Mathf.FloorToInt(atlas.cropResolution.y);
+			height = Mathf.FloorToInt(atlas.cropResolution.y);
 			SetupModule(atlasElement, textureType);
 			resolutionScale = atlas.resolutionScale * atlasElement.slotData.overlayScale;
 
 			if (atlasElement.overlays == null)
-            {
-                return;
-            }
+				return;
 
-            for (int i2 = 0; i2 < atlasElement.overlays.Length; i2++)
+			for (int i2 = 0; i2 < atlasElement.overlays.Length; i2++)
 			{
 				SetupOverlay(atlasElement, i2, textureType);
 			}
@@ -431,27 +403,12 @@ namespace UMA
 
 		private void SetupOverlay(UMAData.MaterialFragment source, int OverlayIndex, int textureType)
 		{
-			if (source.overlays[OverlayIndex] == null)
-            {
-                return;
-            }
+			if (source.overlays[OverlayIndex] == null) return;
+			if (textureType >= source.overlays[OverlayIndex].textureList.Length) return;
+			if (source.overlays[OverlayIndex].textureList[textureType] == null) return;
+			if (source.isNoTextures) return;
 
-            if (textureType >= source.overlays[OverlayIndex].textureList.Length)
-            {
-                return;
-            }
-
-            if (source.overlays[OverlayIndex].textureList[textureType] == null)
-            {
-                return;
-            }
-
-            if (source.isNoTextures)
-            {
-                return;
-            }
-
-            Rect overlayRect;
+			Rect overlayRect;
 
 			if (source.rects[OverlayIndex].width != 0)
 			{
@@ -490,15 +447,14 @@ namespace UMA
 			{
 				return DiffuseBlendModeShaders[0].Combiner;
 			}
-			for (int i = 0; i < DiffuseBlendModeShaders.Count; i++)
-            {
-                var s = DiffuseBlendModeShaders[i];
-                if ((int)s.BlendMode == (int)blendmode)
-                {
-                    isAdvanced = true;
-                    return s.Combiner;
-                }
-            }
+			foreach (var s in DiffuseBlendModeShaders)
+			{
+				if ((int)s.BlendMode == (int)blendmode)
+				{
+					isAdvanced = true;
+					return s.Combiner;
+				}
+			}
 			return diffuseShader;
 		}
 
@@ -511,9 +467,8 @@ namespace UMA
             {
                 return shaderList[0].Combiner;
             }
-            for (int i = 0; i < shaderList.Count; i++)
+            foreach (var s in shaderList)
             {
-                var s = shaderList[i];
                 if ((int)s.BlendMode == (int)blendmode)
                 {
                     isAdvanced = true;

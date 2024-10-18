@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UMA.CharacterSystem;
 using UnityEditor;
@@ -98,14 +99,11 @@ public class InteractiveUMAWindow : SceneView
         CameraMode currentMode = this.cameraMode;
 
         if (currentMode.drawMode == newMode)
-        {
             return;
-        }
-
         cameraMode = SceneView.GetBuiltinCameraMode(newMode);
     }
 
-    protected override void OnSceneGUI()
+    protected override void OnGUI()
     {
         InitializeIfNeeded();
         if (bsToggled == null)
@@ -131,7 +129,7 @@ public class InteractiveUMAWindow : SceneView
                 FrameSelected();
             }
         } 
-        base.OnSceneGUI();
+        base.OnGUI();
     }
 
    
@@ -223,7 +221,7 @@ public class InteractiveUMAWindow : SceneView
             base.OnEnable();
             titleContent = new GUIContent(WindowName);
             EditorApplication.playModeStateChanged += EditorChanged;
-            CompilationPipeline.compilationStarted += CompilationPipeline_assemblyCompilationStarted;
+            CompilationPipeline.assemblyCompilationStarted += CompilationPipeline_assemblyCompilationStarted;
             duringSceneGui += InteractiveUMAWindow_duringSceneGui;             
         }
         catch (Exception) { };
@@ -252,9 +250,7 @@ public class InteractiveUMAWindow : SceneView
     public Ray GUIPointToWorldRay(Vector2 position, float startZ = float.NegativeInfinity)
     {
         if (float.IsNegativeInfinity(startZ))
-        {
             startZ = camera.nearClipPlane;
-        }
 
         Vector2 screenPixelPos = GUIPointToScreenPixelCoordinate(position);
         Rect viewport = camera.pixelRect;
@@ -297,7 +293,7 @@ public class InteractiveUMAWindow : SceneView
     }
 
 
-    private void CompilationPipeline_assemblyCompilationStarted(object obj)
+    private void CompilationPipeline_assemblyCompilationStarted(string obj)
     {
         CloseCleanup();
     }
@@ -327,7 +323,7 @@ public class InteractiveUMAWindow : SceneView
                 EditorSceneManager.ClosePreviewScene(s);
             }
             EditorApplication.playModeStateChanged -= EditorChanged;
-            CompilationPipeline.compilationStarted -= CompilationPipeline_assemblyCompilationStarted;
+            CompilationPipeline.assemblyCompilationStarted -= CompilationPipeline_assemblyCompilationStarted;
             duringSceneGui -= InteractiveUMAWindow_duringSceneGui;
         }
     }

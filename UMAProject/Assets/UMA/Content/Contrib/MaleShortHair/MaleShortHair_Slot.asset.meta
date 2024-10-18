@@ -1,8 +1,10 @@
 fileFormatVersion: 2
-guid: 6c205402b9dc47943b10ac61ce5639e6
+guid: 948be3b7076b1194ab1f335624c88fb2
+labels:
+- UMA_Slot
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 11400000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

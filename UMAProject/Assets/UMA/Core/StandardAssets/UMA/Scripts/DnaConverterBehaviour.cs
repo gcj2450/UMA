@@ -62,11 +62,8 @@ namespace UMA
 			get
 			{
 				if (dnaTypeHash == 0)
-                {
-                    dnaTypeHash = UMAUtils.StringToHash(DNAType.Name);
-                }
-
-                return dnaTypeHash;
+					dnaTypeHash = UMAUtils.StringToHash(DNAType.Name);
+				return dnaTypeHash;
 			}
 		}
 

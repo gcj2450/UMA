@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -69,11 +71,9 @@ public class UMAAnimationPathRenamer : EditorWindow
 		float labelWidth = EditorGUIUtility.labelWidth;
 
 		if (CurveDatasList.Count == 0)
-        {
-            Initialize();
-        }
+			Initialize();
 
-        foreach (List<RemapperCurveData> oneCurveData in CurveDatasList)
+		foreach (List<RemapperCurveData> oneCurveData in CurveDatasList)
 		{
 			HashSet<string> unique = new HashSet<string>();
 			List<RemapperCurveData> uniqueCurveDatas = new List<RemapperCurveData>();
@@ -331,11 +331,9 @@ public class UMAAnimationPathRenamer : EditorWindow
 			case EventType.DragUpdated:
 			case EventType.DragPerform:
 				if (!drop_area.Contains(evt.mousePosition))
-                {
-                    return;
-                }
+					return;
 
-                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+				DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
 
 				if (evt.type == EventType.DragPerform)
 				{

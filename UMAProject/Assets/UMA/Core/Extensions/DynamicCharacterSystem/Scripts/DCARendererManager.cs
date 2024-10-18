@@ -86,21 +86,19 @@ namespace UMA.CharacterSystem
             SlotData[] slots = umaData.umaRecipe.slotDataList;
 			slotsToAdd.Clear();
 
-            for (int i1 = 0; i1 < RendererElements.Count; i1++)
+			foreach (RendererElement element in RendererElements)
 			{
-                RendererElement element = RendererElements[i1];
-                if (element.rendererAssets == null || element.rendererAssets.Count <= 0)
+				if (element.rendererAssets == null || element.rendererAssets.Count <= 0)
                 {
                     continue;
                 }
 
                 wardrobeSlotAssets.Clear();
 
-                //First, lets collect a list of the slotDataAssets that are present in the wardrobe recipes of the wardrobe slots we've specified
-                for (int i2 = 0; i2 < element.wardrobeSlots.Count; i2++)
+				//First, lets collect a list of the slotDataAssets that are present in the wardrobe recipes of the wardrobe slots we've specified
+				foreach (string wardrobeSlot in element.wardrobeSlots)
 				{
-                    string wardrobeSlot = element.wardrobeSlots[i2];
-                    UMATextRecipe recipe = avatar.GetWardrobeItem(wardrobeSlot);
+					UMATextRecipe recipe = avatar.GetWardrobeItem(wardrobeSlot);
 					if (recipe != null)
 					{
 						recipe.Load(umaRecipe, context);
@@ -129,12 +127,11 @@ namespace UMA.CharacterSystem
 					}
 				}
 
-                //Next, check each slot for if they are in the list of specified slots or exist in one of the wardrobe recipes of the wardrobe slot we specified.
-                for (int i2 = 0; i2 < slots.Length; i2++)
+				//Next, check each slot for if they are in the list of specified slots or exist in one of the wardrobe recipes of the wardrobe slot we specified.
+				foreach (SlotData slot in slots)
 				{
-                    SlotData slot = slots[i2];
-                    // if (element.slotAssets.Contains(slot.asset) || wardrobeSlotAssets.Contains(slot.asset))
-                    if (HasSlot(element.slotAssets,slot.slotName) || HasSlot(wardrobeSlotAssets,slot.slotName))
+					// if (element.slotAssets.Contains(slot.asset) || wardrobeSlotAssets.Contains(slot.asset))
+					if (HasSlot(element.slotAssets,slot.slotName) || HasSlot(wardrobeSlotAssets,slot.slotName))
 					{
 						//We check for at least one rendererAsset at the top level for loop.
 						//Set our existing slot to the first renderer in our renderer list.
@@ -167,10 +164,9 @@ namespace UMA.CharacterSystem
 		{
 			if (slots != null)
 			{
-                for (int i = 0; i < slots.Count; i++)
+				foreach (SlotDataAsset sl in slots)
 				{
-                    SlotDataAsset sl = slots[i];
-                    if (sl != null)
+					if (sl != null)
 					{
 						if (sl.slotName == slotName)
                         {

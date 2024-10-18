@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
@@ -40,11 +42,8 @@ public static class InspectorUtlity
 		// Finally revert back to the previous selection so that other inspectors continue to inspect whatever they were inspecting...
 		Selection.activeObject = prevSelection;
 		if (revertProjectSelection)
-        {
-            EditorGUIUtility.PingObject(prevSelection);
-        }
-
-        return inspectorInstance;
+			EditorGUIUtility.PingObject(prevSelection);
+		return inspectorInstance;
 	}
 
     /// <summary>

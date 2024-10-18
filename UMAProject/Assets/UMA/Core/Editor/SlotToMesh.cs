@@ -1,8 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UMA;
-using Unity.Collections;
+using UMA.Editors;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.WSA;
 
 public class SlotToMesh : EditorWindow
 {
@@ -93,60 +97,6 @@ public class SlotToMesh : EditorWindow
         }
     }
 
-    public static BoneWeight[] ConvertBoneweight1(BoneWeight1[] weights, byte[] bonesPerVertex)
-    {
-        List<BoneWeight> bones = new List<BoneWeight>();
-
-        int boneIndex = 0;
-        for(int i=0;i < bonesPerVertex.Length; i++)
-        {
-            int bonecount = bonesPerVertex[boneIndex];
-            BoneWeight bw = new BoneWeight();
-            for (int j = 0; j < bonecount; j++)
-            {
-                if (j == 0)
-                {
-                    bw.boneIndex0 = weights[boneIndex].boneIndex;
-                    bw.weight0 = weights[boneIndex].weight;
-                }
-                if (j == 1)
-                {
-                    bw.boneIndex1 = weights[boneIndex].boneIndex;
-                    bw.weight1 = weights[boneIndex].weight;
-                }
-                if (j == 2)
-                {
-                    bw.boneIndex2 = weights[boneIndex].boneIndex;
-                    bw.weight2 = weights[boneIndex].weight;
-                }
-                if (j == 3)
-                {
-                    bw.boneIndex3 = weights[boneIndex].boneIndex;
-                    bw.weight3 = weights[boneIndex].weight;
-                }
-                boneIndex ++;
-            }
-        }
-        return bones.ToArray();
-    }
-
-    public static BoneWeight[] ConvertBoneweights(UMABoneWeight[] umaBones)
-    {
-        BoneWeight[] boneWeights = new BoneWeight[umaBones.Length];
-        for (int i = 0; i < umaBones.Length; i++)
-        {
-            boneWeights[i].boneIndex0 = umaBones[i].boneIndex0;
-            boneWeights[i].boneIndex1 = umaBones[i].boneIndex1;
-            boneWeights[i].boneIndex2 = umaBones[i].boneIndex2;
-            boneWeights[i].boneIndex3 = umaBones[i].boneIndex3;
-            boneWeights[i].weight0 = umaBones[i].weight0;
-            boneWeights[i].weight1 = umaBones[i].weight1;
-            boneWeights[i].weight2 = umaBones[i].weight2;
-            boneWeights[i].weight3 = umaBones[i].weight3;
-        }
-        return boneWeights;
-    }
-
     public static Mesh ConvertSlotToMesh(SlotDataAsset slot)
     {
         Mesh mesh = new Mesh();
@@ -155,19 +105,6 @@ public class SlotToMesh : EditorWindow
         mesh.normals = slot.meshData.normals;
         mesh.tangents = slot.meshData.tangents;
         mesh.subMeshCount = slot.meshData.subMeshCount;
-        /*
-        if (slot.meshData.boneWeights != null && slot.meshData.boneWeights.Length > 0)
-        {
-            mesh.boneWeights = ConvertBoneweights(slot.meshData.boneWeights);
-        }
-        else
-        {
-            mesh.boneWeights = ConvertBoneweight1(slot.meshData.ManagedBoneWeights, slot.meshData.ManagedBonesPerVertex);
-            var unityBonesPerVertex = new NativeArray<byte>(slot.meshData.ManagedBonesPerVertex, Allocator.Temp);
-            var unityBoneWeights = new NativeArray<BoneWeight1>(slot.meshData.ManagedBoneWeights, Allocator.Temp);
-            mesh.SetBoneWeights(unityBonesPerVertex,unityBoneWeights);
-        } */
-        
         for (int i = 0; i < slot.meshData.subMeshCount; i++)
         {
             var tris = GetTriangles(slot.meshData, i);
@@ -177,69 +114,6 @@ public class SlotToMesh : EditorWindow
 
         return mesh;
     }
-
-    public static Mesh ConvertSlotToMesh(SlotDataAsset slot, Quaternion Rotation, int VertexHighlight)
-    {
-        Mesh mesh = new Mesh();
-        mesh.vertices = slot.meshData.vertices;
-        mesh.uv = slot.meshData.uv;
-        mesh.normals = slot.meshData.normals;
-        mesh.tangents = slot.meshData.tangents;
-        mesh.subMeshCount = slot.meshData.subMeshCount;
-
-        Matrix4x4 rot = Matrix4x4.TRS(Vector3.zero, Rotation, Vector3.one);
-
-        for (int i = 0; i < slot.meshData.subMeshCount; i++)
-        {
-            var tris = GetTriangles(slot.meshData, i);
-            mesh.subMeshCount = slot.meshData.subMeshCount;
-            mesh.SetIndices(tris, MeshTopology.Triangles, i);
-
-        }
-
-
-        if (VertexHighlight != -1)
-        {
-            if (VertexHighlight >= mesh.vertices.Length)
-            {
-                VertexHighlight = mesh.vertices.Length - 1;
-            }
-            Vector3 pos = mesh.vertices[VertexHighlight];
-            GameObject throwAway = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            Mesh sphereMesh = throwAway.GetComponent<MeshFilter>().sharedMesh;
-            Mesh Sphere = Object.Instantiate(sphereMesh);
-
-            Vector3[] vertices = Sphere.vertices;
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                vertices[i] = pos+(vertices[i] * 0.005f);
-            }
-            Sphere.vertices = vertices;
-
-            Mesh combinedMesh = new Mesh();
-            CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = mesh;
-            combine[0].transform = rot;
-            combine[1].mesh = Sphere;
-            combine[1].transform = rot;
-            combinedMesh.CombineMeshes(combine, false, true, false);
-            GameObject.DestroyImmediate(throwAway);
-            DestroyImmediate(mesh);
-            return combinedMesh;
-        }
-        else
-        {
-            CombineInstance[] combineInstances = new CombineInstance[1];
-            combineInstances[0].mesh = mesh;
-            combineInstances[0].transform = rot;
-            Mesh combinedMesh = new Mesh();
-            combinedMesh.CombineMeshes(combineInstances, false, true, false);
-            DestroyImmediate(mesh);
-            return combinedMesh;
-        }
-    }
-
-
 
     public static int[] GetTriangles(UMAMeshData meshData, int subMesh)
     {

@@ -53,29 +53,19 @@ namespace UMA
         {
             get
             {
-                if (_TheType != null && _TheType != typeof(UnityEngine.Object))
-                {
+                if (_TheType != null && _TheType != typeof(UnityEngine.Object)) 
                     return _TheType;
-                }
 
                 if (!UMAAssetIndexer.TypeFromString.ContainsKey(_BaseTypeName))
                 {
                     if (_BaseTypeName.Contains("SlotData"))
-                    {
                         _TheType = typeof(SlotDataAsset);
-                    }
                     else if (_BaseTypeName.Contains("OverlayData"))
-                    {
                         _TheType = typeof(OverlayDataAsset);
-                    }
                     else if (_BaseTypeName.Contains("Animator"))  // for some reason the animatorcontrollers were blowing up in 2019.3
-                    {
                         _TheType = typeof(RuntimeAnimatorController);
-                    }
                     else if (_BaseTypeName.Contains("RaceData"))
-                    {
                         _TheType = typeof(RaceData);
-                    }
                 }
                 else
                 {
@@ -103,27 +93,18 @@ namespace UMA
             get
             {
 #if UNITY_EDITOR
-                if (_SerializedItem != null)
-                {
-                    return _SerializedItem;
-                }
+                if (_SerializedItem != null) return _SerializedItem;
 
                 // Items that are addressable should not be cached.
                 // but the editors still need them, so we'll load them from
                 // the assetdatabase as needed.
-#if !UMA_ALWAYSGETADDR_NO_PROD
-                if (IsAddressable)
+                if (IsAddressable)   
                 {
                     if (Application.isPlaying)
-                    {
                         return null;
-                    }
                     else
-                    {
                         return GetItem();
-                    }
                 }
-#endif
 
                 CacheSerializedItem(); 
                 return _SerializedItem;
@@ -177,20 +158,16 @@ namespace UMA
 			return itemObject;
 		}
 
-		public Object CacheSerializedItem()
+		public void CacheSerializedItem()
 		{
 #if UNITY_EDITOR
-			if (_SerializedItem != null) return _SerializedItem;
+			if (_SerializedItem != null) return;
 #if SUPER_LOGGING
             Debug.Log("Loading item in AssetItem: " + _Name);
 #endif
-            //if (IsAddressable) return;
+			//if (IsAddressable) return;
 
-            _SerializedItem = GetItem();
-            return _SerializedItem;
-#else
-            // This function does nothing in a build.
-            return null;
+			_SerializedItem = GetItem();
 #endif
         }
 
@@ -313,53 +290,36 @@ namespace UMA
         public string ToString(string SortOrder)
         {
             if (SortOrder == "AssetName")
-            {
                 return _AssetBaseName;
-            }
-
             if (SortOrder == "FilePath")
-            {
                 return _Path;
-            }
-
             return _Name;
         }
 
         public bool Equals(AssetItem other)
         {
             if (other == null)
-            {
                 return false;
-            }
 
             if (UMAAssetIndexer.SortOrder == "AssetName")
             {
                 if (this._AssetBaseName == other._AssetBaseName)
-                {
                     return true;
-                }
                 else
-                {
                     return false;
-                }
             }
 
             if (UMAAssetIndexer.SortOrder == "FilePath")
             {
                 if (this._Path == other._Path)
-                {
                     return true;
-                }
                 else
-                {
                     return false;
-                }
+
             }
 
             if (this._Name == other._Name)
-            {
                 return true;
-            }
 
             return false;
         }
@@ -368,9 +328,7 @@ namespace UMA
         {
             // A null value means that this object is greater.
             if (other == null)
-            {
                 return 1;
-            }
 
             if (UMAAssetIndexer.SortOrder == "AssetName")
             {
@@ -406,11 +364,7 @@ namespace UMA
 #region Constructors
         public AssetItem(System.Type Type, string Name, string Path, Object Item)
         {
-            if (Type == null)
-            {
-                return;
-            }
-
+            if (Type == null) return;
             _TheType = Type;
             _BaseTypeName = Type.Name;
             _Name = Name;
@@ -422,10 +376,7 @@ namespace UMA
         }
         public AssetItem(System.Type Type, Object Item)
         {
-            if (Type == null)
-            {
-                return;
-            }
+            if (Type == null) return;
 #if UNITY_EDITOR
             _Path = AssetDatabase.GetAssetPath(Item.GetInstanceID());
 			_Guid = AssetDatabase.AssetPathToGUID(_Path);

@@ -33,7 +33,6 @@ namespace UMA.Editors
 			_alphaMask = serializedObject.FindProperty("alphaMask");
 			_tags = serializedObject.FindProperty("tags");
 			_occlusionEntries = serializedObject.FindProperty("OcclusionEntries");
-			(target as OverlayDataAsset).tagsList = GUIHelper.InitTagsList("tags",serializedObject);
 
 			EditorApplication.update += DoDelayedSave;
 		}
@@ -61,11 +60,9 @@ namespace UMA.Editors
 		{
 			OverlayDataAsset od = target as OverlayDataAsset;
 			if (od.lastActionTime == 0)
-            {
-                od.lastActionTime = Time.realtimeSinceStartup;
-            }
+				od.lastActionTime = Time.realtimeSinceStartup;
 
-            od.ValidateBlendList();
+			od.ValidateBlendList();
 			serializedObject.Update();
 
 			EditorGUI.BeginChangeCheck();
@@ -84,15 +81,11 @@ namespace UMA.Editors
 				_channels = tempObj.FindProperty("channels");
 
 				if (_channels == null)
-                {
-                    EditorGUILayout.HelpBox("Channels not found!", MessageType.Error);
-                }
-                else
-                {
-                    textureChannelCount = _channels.arraySize;
-                }
+					EditorGUILayout.HelpBox("Channels not found!", MessageType.Error);
+				else
+					textureChannelCount = _channels.arraySize;
 
-                od.textureFoldout = GUIHelper.FoldoutBar(od.textureFoldout, $"Texture Channels ({textureChannelCount}) Material Channels ({_textureList.arraySize})");
+				od.textureFoldout = GUIHelper.FoldoutBar(od.textureFoldout, "Texture Channels");
 
 				if (od.textureFoldout)
 				{
@@ -127,7 +120,7 @@ namespace UMA.Editors
 
 				if ( _textureList.arraySize != textureChannelCount)
 				{
-					EditorGUILayout.HelpBox($"Overlay Texture count {_textureList.arraySize} and UMA Material channel count {textureChannelCount} don't match!", MessageType.Error);
+					EditorGUILayout.HelpBox("Overlay Texture count and UMA Material channel count don't match!", MessageType.Error);
 				}
 
 				if (!_textureList.hasMultipleDifferentValues)
@@ -136,47 +129,27 @@ namespace UMA.Editors
 					for (int i = 0; i < _textureList.arraySize; i++)
 					{
 						if (_textureList.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                        {
-                            allValid = false;
-                        }
-                    }
+							allValid = false;
+					}
 					if (!allValid)
-                    {
-                        EditorGUILayout.HelpBox("Not all textures in Texture List set. This overlay will only work as an additional overlay in a recipe", MessageType.Warning);
-                    }
-                }
+						EditorGUILayout.HelpBox("Not all textures in Texture List set. This overlay will only work as an additional overlay in a recipe", MessageType.Warning);
+				}
 			}
 			else
-            {
-                EditorGUILayout.HelpBox("No UMA Material selected!", MessageType.Warning);
-            }
+				EditorGUILayout.HelpBox("No UMA Material selected!", MessageType.Warning);
 
-			od.additionalFoldout = GUIHelper.FoldoutBar(od.additionalFoldout, "Alpha mask Parameters");
+			GUILayout.Space(20f);
+			od.additionalFoldout = GUIHelper.FoldoutBar(od.additionalFoldout, "Additional Parameters");
 			if (od.additionalFoldout)
 			{
 				GUIHelper.BeginVerticalPadded(10, new Color(0.75f, 0.875f, 1f));
-				EditorGUILayout.HelpBox("The alpha mask is optional. If it is not set the texture[0].alpha is used instead.", MessageType.Info);
 				EditorGUILayout.PropertyField(_alphaMask);
-				GUIHelper.EndVerticalPadded(10);
-			}
-
-			od.tagsFoldout = GUIHelper.FoldoutBar(od.tagsFoldout, "Tags");
-			if (od.tagsFoldout)
-			{
-                GUIHelper.BeginVerticalPadded(10, new Color(0.75f, 0.875f, 1f));
-                // EditorGUILayout.PropertyField(_tags, true);
-                (target as OverlayDataAsset).tagsList.DoLayoutList();
-                GUIHelper.EndVerticalPadded(10);
-			}
-
-			od.occlusionFoldout = GUIHelper.FoldoutBar(od.occlusionFoldout, "Occlusion");
-			if (od.occlusionFoldout)
-			{
-				GUIHelper.BeginVerticalPadded(10, new Color(0.75f, 0.875f, 1f));
+				EditorGUILayout.PropertyField(_tags, true);
 				EditorGUILayout.PropertyField(_occlusionEntries, true);
 				GUIHelper.EndVerticalPadded(10);
 			}
-            serializedObject.ApplyModifiedProperties();
+
+			serializedObject.ApplyModifiedProperties();
 			if (EditorGUI.EndChangeCheck())
 			{
 				od.lastActionTime = Time.realtimeSinceStartup;

@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace UMA
 {
-    /// <summary>
-    /// Base class for UMA character generators.
-    /// </summary>
-    public abstract class UMAGeneratorBase : MonoBehaviour
+	/// <summary>
+	/// Base class for UMA character generators.
+	/// </summary>
+	public abstract class UMAGeneratorBase : MonoBehaviour
 	{
 		public enum FitMethod {DecreaseResolution, BestFitSquare };
 
@@ -43,17 +44,11 @@ namespace UMA
 		[Tooltip("UMA will ignore items with this tag when rebuilding the skeleton.")]
 		public string ignoreTag = "UMAIgnore";
 
-		[Tooltip("UMA will keep items with this tag when rebuilding the skeleton. Any new bone created during the build process will be replaced with the previous copy, keeping components and references intact.")]
-		public string keepTag = "UMAKeepChain";
-
-		[Tooltip("Default Renderer Asset to use for the generated SkinnedMeshRenderer")]
-        public UMARendererAsset defaultRendererAsset;
-
-        [NonSerialized]
+		[NonSerialized]
 		public bool FreezeTime;
 
 		public bool SaveAndRestoreIgnoredItems;
-		 
+
 		protected OverlayData _defaultOverlayData;
 		public OverlayData defaultOverlaydata
 		{
@@ -168,10 +163,9 @@ namespace UMA
 					parameters = new AnimatorControllerParameter[animator.parameterCount];
 					Array.Copy(animator.parameters, parameters, animator.parameterCount);
 
-                    for (int i = 0; i < parameters.Length; i++)
+					foreach (AnimatorControllerParameter param in parameters)
 					{
-                        AnimatorControllerParameter param = parameters[i];
-                        switch (param.type)
+						switch (param.type)
 						{
 							case AnimatorControllerParameterType.Bool:
 								param.defaultBool = animator.GetBool(param.nameHash);
@@ -215,15 +209,11 @@ namespace UMA
                     return;
                 }
 
-                if (animator == null)
+                if (animator == false)
                 {
                     return;
                 }
 
-				if (animator.isActiveAndEnabled == false) {
-					return;
-				}
-					
                 if (animator.layerCount == stateHashes.Length)
 				{
 					for (int i = 0; i < animator.layerCount; i++)
@@ -241,10 +231,9 @@ namespace UMA
 				}
 				if (parameters != null)
 				{
-                    for (int i = 0; i < parameters.Length; i++)
+					foreach (AnimatorControllerParameter param in parameters)
 					{
-                        AnimatorControllerParameter param = parameters[i];
-                        if (!animator.IsParameterControlledByCurve(param.nameHash))
+						if (!animator.IsParameterControlledByCurve(param.nameHash))
 						{
 							switch (param.type)
 							{
@@ -374,11 +363,7 @@ namespace UMA
 			{
 				case RaceData.UMATarget.Humanoid:
 					umaTPose.DeSerialize();
-					var avatar = CreateAvatar(umaData, umaTPose);
-					if (avatar != null)
-					{
-                        animator.avatar = avatar;
-                    }
+					animator.avatar = CreateAvatar(umaData, umaTPose);
 					break;
 				case RaceData.UMATarget.Generic:
 					animator.avatar = CreateGenericAvatar(umaData);
@@ -394,10 +379,9 @@ namespace UMA
             }
 
             Dictionary<String, String> bones = new Dictionary<String, String>();
-            for (int i = 0; i < description.skeleton.Length; i++)
+			foreach (var sb in description.skeleton)
 			{
-                SkeletonBone sb = description.skeleton[i];
-                if (Debug.isDebugBuild)
+				if (Debug.isDebugBuild)
                 {
                     Debug.Log(sb.name);
                 }
@@ -409,10 +393,9 @@ namespace UMA
                 Debug.Log("----");
             }
 
-            for (int i = 0; i < description.human.Length; i++)
+            foreach (var hb in description.human)
 			{
-                HumanBone hb = description.human[i];
-                string boneName;
+				string boneName;
 				if (bones.TryGetValue(hb.boneName, out boneName))
 				{
 					if (Debug.isDebugBuild)
@@ -445,18 +428,10 @@ namespace UMA
 			umaTPose.DeSerialize();
 			HumanDescription description = CreateHumanDescription(umaData, umaTPose);
 			//DebugLogHumanAvatar(umaData.gameObject, description);
-			try
-			{
-				Avatar res = AvatarBuilder.BuildHumanAvatar(umaData.gameObject, description);
-				CreatedAvatars.Add(res.GetInstanceID());
-				res.name = umaData.name;
-				return res;
-			}
-            catch (Exception ex)
-			{
-                Debug.LogError("Error creating avatar: " + ex.Message);
-                return null;
-            }
+			Avatar res = AvatarBuilder.BuildHumanAvatar(umaData.gameObject, description);
+			CreatedAvatars.Add(res.GetInstanceID());
+			res.name = umaData.name;
+			return res;
 		}
 
 		/// <summary>

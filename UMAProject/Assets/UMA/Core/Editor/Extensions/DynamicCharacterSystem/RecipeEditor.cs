@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UMA.Integrations;
+using UMA.CharacterSystem;
+using UnityEngine.SceneManagement;
 
 namespace UMA.Editors
 {
-    /// <summary>
-    /// Recipe editor.
-    /// Class is marked partial so developers can add their own functionality to edit new properties added to 
-    /// UMATextRecipe without changing code delivered with UMA.
-    /// </summary>
-    [CanEditMultipleObjects]
+	/// <summary>
+	/// Recipe editor.
+	/// Class is marked partial so developers can add their own functionality to edit new properties added to 
+	/// UMATextRecipe without changing code delivered with UMA.
+	/// </summary>
+	[CanEditMultipleObjects]
     [CustomEditor(typeof(UMARecipeBase), true)]
     public partial class RecipeEditor : CharacterBaseEditor
     {
@@ -236,17 +238,27 @@ namespace UMA.Editors
 
         protected override void DoUpdate()
         {
-            _needsUpdate = false;
             var recipeBase = (UMARecipeBase)target;
             recipeBase.Save(_recipe, UMAContextBase.Instance);
             EditorUtility.SetDirty(recipeBase);
-            AssetDatabase.SaveAssetIfDirty(recipeBase);
+			string path = AssetDatabase.GetAssetPath(recipeBase.GetInstanceID());
+			AssetDatabase.ImportAsset(path);
 			_rebuildOnLayout = true;
+
+            _needsUpdate = false;
+            if (PowerToolsIntegration.HasPreview(recipeBase))
+            {
+                PowerToolsIntegration.Refresh(recipeBase);
+            }
 
             if (target is UMATextRecipe)
             {
                 UMAUpdateProcessor.UpdateRecipe(target as UMATextRecipe);
             }
+            //else
+            //{
+            //    PowerToolsIntegration.Show(recipeBase);
+            //}
         }
 
         protected override void Rebuild()

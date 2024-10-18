@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UMA.Editors;
 using UnityEditor;
@@ -7,11 +8,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UMA
-{
-    /// <summary>
-    /// This editor is used for the UI in the inspector to edit overlays. It uses the OverlayViewer component.
-    /// </summary>
-    [CustomEditor(typeof(OverlayViewer))]
+{ 
+	/// <summary>
+	/// This editor is used for the UI in the inspector to edit overlays. It uses the OverlayViewer component.
+	/// </summary>
+	[CustomEditor(typeof(OverlayViewer))]
 	public class OverlayViewerEditor : Editor
 	{
 		private ReorderableList overlayDataList;
@@ -27,7 +28,7 @@ namespace UMA
 		private SlotData TempSlot;
 		private UMAGeneratorStub ugb;
 		private OverlayData TempOverlay;
-		private UMAGeneratorPro activeGenerator;
+		private UMAGeneratorCoroutine activeGeneratorCoroutine;
 		private OverlayData BaseOverlay = null;
 		private Dictionary<int, OverlayData> AdditionalOverlays = new Dictionary<int, OverlayData>();
 
@@ -41,21 +42,16 @@ namespace UMA
 		private void Initialize(bool retry = true)
 		{
 			if (serializedObject == null)
-            {
                 return;
-            }
-
-            if (serializedObject.targetObject == null)  // I don't even know how this is possible. Nothing is selected. But unity is doing it.
-            {
+			if (serializedObject.targetObject == null)  // I don't even know how this is possible. Nothing is selected. But unity is doing it.
                 return;
-            }
 
-            overlayViewer = serializedObject.targetObject as OverlayViewer;
+			overlayViewer = serializedObject.targetObject as OverlayViewer;
 			TempUMAData = overlayViewer.gameObject.GetComponent<UMAData>();
 			ugb = overlayViewer.gameObject.GetComponent<UMAGeneratorStub>();
 			TempSlot = new SlotData(overlayViewer.SlotDataAsset);
 			rawImage = overlayViewer.ImageViewer;
-			activeGenerator = new UMAGeneratorPro();
+			activeGeneratorCoroutine = new UMAGeneratorCoroutine();
 
 			SetupGenerator();
 
@@ -140,11 +136,10 @@ namespace UMA
 		{
 
 			if (baseOverlayProperty == null)
-            {
-                return;
-            }
+				return;
 
-            if (BaseOverlay == null || (BaseOverlay.asset.GetInstanceID() != (baseOverlayProperty.objectReferenceValue as OverlayDataAsset).GetInstanceID()))
+
+			if (BaseOverlay == null || (BaseOverlay.asset.GetInstanceID() != (baseOverlayProperty.objectReferenceValue as OverlayDataAsset).GetInstanceID()))
 			{
 				OverlayDataAsset overlayDataAsset = baseOverlayProperty.objectReferenceValue as OverlayDataAsset;
 				BaseOverlay = new OverlayData(overlayDataAsset);
@@ -155,10 +150,9 @@ namespace UMA
 			List<OverlayData> od = new List<OverlayData>();
 			od.Add(BaseOverlay);
 
-            for (int i = 0; i < viewerobj.Overlays.Count; i++)
+			foreach (OverlayDataAsset o in viewerobj.Overlays)
 			{
-                OverlayDataAsset o = viewerobj.Overlays[i];
-                if (o != null)
+				if (o != null)
 				{
 					if (!AdditionalOverlays.ContainsKey(o.GetInstanceID()))
 					{
@@ -177,9 +171,11 @@ namespace UMA
 			TextureProcessBaseCoroutine textureProcessCoroutine;
 			textureProcessCoroutine = new TextureProcessPROCoroutine();
 			textureProcessCoroutine.Prepare(TempUMAData, TempUMAData.umaGenerator);
+			activeGeneratorCoroutine.Prepare(TempUMAData.umaGenerator, TempUMAData, textureProcessCoroutine, false, 1);
 			try
 			{
-				activeGenerator.ProcessTexture(TempUMAData.umaGenerator,TempUMAData,false,1);
+				bool workDone = activeGeneratorCoroutine.Work();
+
                 rawImage.texture = GetMainTexture(TempUMAData.generatedMaterials.materials[0].material);
                 //Debug.Log("Workdone is " + workDone);
                 rawImage.material = null;
@@ -188,10 +184,8 @@ namespace UMA
 			{
 				Debug.Log("Something has gone wrong. Reinitializing. Text of error was: "+ex.Message);
 				if (retry)
-                {
-                    Initialize(false);
-                }
-            }
+					Initialize(false);
+			}
 		}
 
         private Texture GetMainTexture(Material material)
@@ -238,9 +232,8 @@ namespace UMA
             string[] texNames = material.GetTexturePropertyNames();
             if (texNames.Length > 0)
             {
-                for (int i = 0; i < texNames.Length; i++)
+                foreach(string texName in texNames)
                 {
-                    string texName = texNames[i];
                     Texture tex = material.GetTexture(texName);
                     if (tex != null)
                     {
@@ -294,10 +287,7 @@ namespace UMA
 			if (GUILayout.Button("Add"))
 			{
                 int position = overlayDataList.index;
-                if (position < 0)
-                {
-                    position = overlayDataList.count - 1;
-                }
+                if (position < 0) position = overlayDataList.count - 1;
 
                 overlaysProperty.InsertArrayElementAtIndex(position);
 				SerializedObject obj = overlaysProperty.serializedObject;

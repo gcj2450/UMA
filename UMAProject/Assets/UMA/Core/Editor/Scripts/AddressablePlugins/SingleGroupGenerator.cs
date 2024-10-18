@@ -1,12 +1,15 @@
-﻿#if UMA_ADDRESSABLES
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using UMA.CharacterSystem;
+using UMA;
 using UnityEditor;
+using UnityEngine;
+using UMA.CharacterSystem;
+
+#if UMA_ADDRESSABLES
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using UnityEngine;
 
 
 namespace UMA
@@ -65,12 +68,6 @@ namespace UMA
                         List<string> recipes = wc.wardrobeCollection.GetAllRecipeNamesInCollection();
                         foreach (string recipe in recipes)
                         {
-#if UMA_VES
-                        if (VesUmaLabelMaker.DO_NOT_INCLUDE_LABELS.Contains(label))
-                        {   //VES added
-                            continue;
-                        }
-#endif
                             if (RecipeExtraLabels.ContainsKey(recipe) == false)
                             {
                                 RecipeExtraLabels.Add(recipe, new List<string>());
@@ -83,12 +80,6 @@ namespace UMA
                 float inc = 1.0f / Recipes.Count;
                 foreach (UMAPackedRecipeBase uwr in Recipes)
                 {
-#if UMA_VES
-                    if (VesUmaLabelMaker.DO_NOT_INCLUDE_LABELS.Contains(uwr.AssignedLabel))
-                    { //VES added
-                        continue;
-                    }
-#endif
                     List<string> ExtraLabels = new List<string>();
 
                     if (RecipeExtraLabels.ContainsKey(uwr.name))
@@ -100,52 +91,17 @@ namespace UMA
                     LogText("Processing recipe: " + uwr.name + " Label: " + uwr.AssignedLabel);
 
                     EditorUtility.DisplayProgressBar("Generating", "processing recipe: " + uwr.name , pos);
-
-
-                    IUMAIndexOptions options = uwr as IUMAIndexOptions;
-                    if (options != null && options.LabelLocalFiles)
+                    List<AssetItem> items = Index.GetAssetItems(uwr, true);
+                    foreach (AssetItem ai in items)
                     {
-                        // Get the asset items for the recipe from the local directory, not the index
-                        // if it doesn't exist in the local directory, then get it from the index
-                        List<AssetItem> items = UMAAssetIndexer.Instance.GetAssetItems(uwr, false);
-                        foreach (AssetItem ai in items)
+                        if (AddressableItems.ContainsKey(ai) == false)
                         {
-                            // Local items do not get default labels.
-                            // instead, they only get the label of the wardrobe recipe they are in.
-                            string label = uwr.AssignedLabel;
-                            // get the recipe path.
-                            // search for the asset in the recipe path, including children.
-                            // if it exists, then add the label to the asset.
-
-                            string path = AssetDatabase.GetAssetPath(ai.Item.GetInstanceID());
-                            string filename = System.IO.Path.GetFileName(path);
-                            string basePath = System.IO.Path.GetDirectoryName(path);
-
-                            Debug.Log("Looking for asset: " + filename + " in path: " + basePath);
-                            AssetItem ai2 = GetLocalAssetItemIfExist(basePath, filename, ai._Type.Name, ai);
-
-                            if (ai._SerializedItem.GetInstanceID() != ai2._SerializedItem.GetInstanceID())
-                            {
-                                AddressableItems[ai].Add(uwr.AssignedLabel);
-                            }
+                            AddressableItems.Add(ai, new List<string>());
+                            AddressableItems[ai].Add(DefaultAddressableLabel);
                         }
+                        AddressableItems[ai].Add(uwr.AssignedLabel);
+                        AddressableItems[ai].AddRange(ExtraLabels);
                     }
-                    else
-                    {
-                        // Get the asset items for the recipe from the index
-                        List<AssetItem> items = Index.GetAssetItems(uwr, true);
-                        foreach (AssetItem ai in items)
-                        {
-                            if (AddressableItems.ContainsKey(ai) == false)
-                            {
-                                AddressableItems.Add(ai, new List<string>());
-                                AddressableItems[ai].Add(DefaultAddressableLabel);
-                            }
-                            AddressableItems[ai].Add(uwr.AssignedLabel);
-                            AddressableItems[ai].AddRange(ExtraLabels);
-                        }
-                    }
-
                     if (IncludeRecipes)
                     {
                         AssetItem RecipeItem = UMAAssetIndexer.Instance.GetRecipeItem(uwr);
@@ -307,30 +263,6 @@ namespace UMA
                 EditorUtility.ClearProgressBar();
                 UMAAssetIndexer.Instance.ForceSave();
             }
-        }
-
-        AssetItem GetLocalAssetItemIfExist(string path, string name, string typename, AssetItem defaultItem)
-        {
-            // We need to use the EvilName of the asset item to get the correct asset item.
-            string evilName = defaultItem.EvilName;
-
-            var guids = AssetDatabase.FindAssets("t:" + typename, new string[] { path });
-            foreach (string guid in guids)
-            {
-                string p = AssetDatabase.GUIDToAssetPath(guid);
-                var o = AssetDatabase.LoadAssetAtPath(p, defaultItem._Type);
-                if (o != null)
-                {
-                    var thisEvilName = AssetItem.GetEvilName(o);
-                    if (thisEvilName == evilName)
-                    {
-                        Debug.Log("found local asset: " + p);
-                        AssetItem localItem = new AssetItem(defaultItem._Type, o.name, p, o);
-                        return localItem;
-                    }
-                }
-            }
-            return defaultItem;
         }
 
         public bool Prepare()

@@ -1,13 +1,14 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace UMA
 {
-    /// <summary>
-    /// Overlay color data.
-    /// </summary>
-    [System.Serializable]
+	/// <summary>
+	/// Overlay color data.
+	/// </summary>
+	[System.Serializable]
 	public class OverlayColorData :  System.IEquatable<OverlayColorData>
 	{
 		public static int currentinstance = 0;
@@ -25,11 +26,8 @@ namespace UMA
 		public bool foldout;
 		public bool showAdvanced;
 		public bool isBaseColor = false;
-		public bool deleteThis = false;
 #endif
-        public Color displayColor = Color.white;
-
-        public Color color
+		public Color color
 		{
 			get
 			{
@@ -88,12 +86,12 @@ namespace UMA
 		{
 			if (Channel <= channelCount)
 			{
-				uint multiply = ColorDef.ToUInt(channelMask[Channel]);
-				uint additive = ColorDef.ToUInt(channelAdditiveMask[Channel]);
-
-				if (multiply == 0xffffffff && additive == 0)
+				if (channelMask[Channel] == Color.white)
 				{
-					return true;
+					if (channelAdditiveMask[Channel] == EmptyAdditive)
+					{
+						return true;
+					}
 				}
 			}
 			return false;
@@ -129,7 +127,6 @@ namespace UMA
 		{
 			var res = new OverlayColorData();
 			res.name = name;
-			res.displayColor = displayColor;
 #if UNITY_EDITOR
 			res.foldout = foldout;
 			res.isBaseColor = isBaseColor;
@@ -149,7 +146,6 @@ namespace UMA
             {
 				res.PropertyBlock = new UMAMaterialPropertyBlock();
 				res.PropertyBlock.alwaysUpdate = PropertyBlock.alwaysUpdate;
-				res.PropertyBlock.alwaysUpdateParms = PropertyBlock.alwaysUpdateParms;
 				res.PropertyBlock.shaderProperties = new List<UMAProperty>(PropertyBlock.shaderProperties.Count);
 				for(int i=0;i<PropertyBlock.shaderProperties.Count;i++)
                 {
@@ -289,10 +285,6 @@ namespace UMA
 			{
 				if (cd2)
 				{
-					if (cd1.displayColor != cd2.displayColor)
-					{
-						return false;
-					}
 					if (cd2.channelMask.Length != cd1.channelMask.Length)
                     {
                         return false;
@@ -326,10 +318,6 @@ namespace UMA
 			{
 				if (cd2)
 				{
-					if (cd1.displayColor != cd2.displayColor)
-					{
-                        return true;
-                    }
 					if (cd2.channelMask.Length != cd1.channelMask.Length)
                     {
                         return true;
@@ -410,21 +398,6 @@ namespace UMA
             }
         }
 
-		public void EnsureChannelsExact(int ChannelCount)
-		{
-			if (channelMask == null)
-			{
-				channelMask = new Color[ChannelCount];
-				channelAdditiveMask = new Color[ChannelCount];
-			}
-
-            if (channelMask.Length != ChannelCount)
-			{
-                Array.Resize(ref channelMask, ChannelCount);
-                Array.Resize(ref channelAdditiveMask, ChannelCount);
-            }
-        }
-
 		public void AssignTo(OverlayColorData dest)
 		{
 			if (name != null)
@@ -441,51 +414,31 @@ namespace UMA
 			{
 				dest.channelAdditiveMask[i] = channelAdditiveMask[i];
 			}
-			dest.displayColor = displayColor;
-			dest.PropertyBlock = new UMAMaterialPropertyBlock();
-			if (PropertyBlock != null)
-			{
-                dest.PropertyBlock.alwaysUpdate = PropertyBlock.alwaysUpdate;
-				dest.PropertyBlock.alwaysUpdateParms = PropertyBlock.alwaysUpdateParms;
-                dest.PropertyBlock.shaderProperties = new List<UMAProperty>(PropertyBlock.shaderProperties.Count);
-                for (int i = 0; i < PropertyBlock.shaderProperties.Count; i++)
-				{
-                    UMAProperty up = PropertyBlock.shaderProperties[i];
-                    dest.PropertyBlock.shaderProperties.Add(up.Clone());
-                }
-            }
+
 #if UNITY_EDITOR
             dest.isBaseColor = isBaseColor;
 #endif
 		}
-		public void AssignFrom(OverlayColorData src, bool CopyParmsOnly=false)
+		public void AssignFrom(OverlayColorData src)
 		{
-			if (CopyParmsOnly == false)
+			if (src.name != null)
 			{
-#if UNITY_EDITOR
-                isBaseColor = src.isBaseColor;
-#endif
-                if (src.name != null)
-				{
-					name = String.Copy(src.name);
-				}
-				EnsureChannels(src.channelMask.Length);
-				for (int i = 0; i < src.channelMask.Length; i++)
-				{
-					channelMask[i] = src.channelMask[i];
-				}
-				for (int i = 0; i < src.channelAdditiveMask.Length; i++)
-				{
-					channelAdditiveMask[i] = src.channelAdditiveMask[i];
-				}
+				name = String.Copy(src.name);
+			}
+			EnsureChannels(src.channelMask.Length);
+			for (int i = 0; i < src.channelMask.Length; i++)
+			{
+				channelMask[i] = src.channelMask[i];
+			}
+			for (int i = 0; i < src.channelAdditiveMask.Length; i++)
+			{
+				channelAdditiveMask[i] = src.channelAdditiveMask[i];
 			}
 
-			displayColor = src.displayColor;
 			PropertyBlock = new UMAMaterialPropertyBlock();
 			if (src.PropertyBlock != null)
 			{
 				PropertyBlock.alwaysUpdate = src.PropertyBlock.alwaysUpdate;
-				PropertyBlock.alwaysUpdateParms = src.PropertyBlock.alwaysUpdateParms;
 				PropertyBlock.shaderProperties = new List<UMAProperty>(src.PropertyBlock.shaderProperties.Count);
 				for (int i = 0; i < src.PropertyBlock.shaderProperties.Count; i++)
 				{
@@ -493,6 +446,9 @@ namespace UMA
 					PropertyBlock.shaderProperties.Add(up.Clone());
 				}
 			}
+#if UNITY_EDITOR
+			isBaseColor = src.isBaseColor;
+#endif
         }
     }
 }

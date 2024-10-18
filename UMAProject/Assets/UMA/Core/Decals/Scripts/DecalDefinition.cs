@@ -1,7 +1,10 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UMA;
 using Unity.Collections;
 using UnityEngine;
+using static UMA.UMAData;
 
 public class DecalDefinition
 {
@@ -48,15 +51,8 @@ public class DecalDefinition
     {
         // we can't reuse the vertexes because the UV coordinates are different...
 
-        if (Instances == null)
-        {
-            return;
-        }
-
-        if (Instances.Count == 0)
-        {
-            return;
-        }
+        if (Instances == null) return;
+        if (Instances.Count == 0) return;
 
         List<Material> mats = new List<Material>();
         smr.GetMaterials(mats);

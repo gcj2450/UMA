@@ -17,7 +17,7 @@ MonoBehaviour:
   - {fileID: 114475921622480812}
   - {fileID: 114181452766340640}
   _overallModifiers:
-    _adjustScale: 0
+    _adjustScale: 1
     _adjustHeight: 1
     _adjustRadius: 1
     _adjustMass: 1
@@ -28,10 +28,10 @@ MonoBehaviour:
     _bone: Position
     _scaleBoneHash: -1084586333
     _headRatio: 7.5
-    _radiusAdjustY: 0.02
-    _radiusAdjust: {x: 0.23, y: 0}
+    _radiusAdjustY: 0
+    _radiusAdjust: {x: 0.25, y: 0}
     _massAdjust: {x: 42, y: 28, z: 22}
-    _boundsAdjust: {x: -0.36, y: 0.06, z: 0}
+    _boundsAdjust: {x: 0, y: 0, z: 0}
   _displayValue: 
 --- !u!114 &114181452766340640
 MonoBehaviour:
@@ -91,140 +91,10 @@ MonoBehaviour:
       _initialized: 1
   _converterController: {fileID: 11400000}
   _poseDNAConverters:
-  - _poseToApply: {fileID: 11400000, guid: 9cef2a4a284502a47a1f476fd12006be, type: 2}
-    _startingPoseWeight: 0
+  - _poseToApply: {fileID: 11400000, guid: 730a617429c7a9b4ab1cb46f94fdbf4f, type: 2}
+    _startingPoseWeight: 1
     _modifyingDNA:
-      _dnaEvaluators:
-      - _calcOption: 0
-        _dnaName: bodyFitness
-        _dnaNameHash: -1379254163
-        _evaluator:
-          _name: OneZeroZero
-          _graph:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 1
-              inSlope: 0
-              outSlope: -2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 0.5
-              value: 0
-              inSlope: -2
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        _multiplier: 1
-        _initialized: 1
-      _aggregationMethod: 0
-  - _poseToApply: {fileID: 11400000, guid: ef6e26a07163fe949a2543a5da963fe5, type: 2}
-    _startingPoseWeight: 0
-    _modifyingDNA:
-      _dnaEvaluators:
-      - _calcOption: 0
-        _dnaName: bodyFitness
-        _dnaNameHash: -1379254163
-        _evaluator:
-          _name: ZeroOneZero
-          _graph:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 0.5
-              value: 1
-              inSlope: 2
-              outSlope: -2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: -2
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        _multiplier: 1
-        _initialized: 1
-      _aggregationMethod: 0
-  - _poseToApply: {fileID: 11400000, guid: a12733777f479d84486d6b40b98ea37f, type: 2}
-    _startingPoseWeight: 0
-    _modifyingDNA:
-      _dnaEvaluators:
-      - _calcOption: 0
-        _dnaName: bodyFitness
-        _dnaNameHash: -1379254163
-        _evaluator:
-          _name: ZeroZeroOne
-          _graph:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 0.5
-              value: 0
-              inSlope: 0
-              outSlope: 2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 2
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        _multiplier: 1
-        _initialized: 1
+      _dnaEvaluators: []
       _aggregationMethod: 0
 --- !u!114 &114475921622480812
 MonoBehaviour:
@@ -466,550 +336,6 @@ MonoBehaviour:
           _aggregationMethod: 1
       _min: 0.5
       _max: 1.6
-    _umaDNA:
-      dnaTypeHash: 815443803
-  - _hashName: LeftOuterBreast
-    _hash: 361754685
-    _property: 2
-    _valuesX:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
-    _valuesY:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
-    _valuesZ:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
-    _umaDNA:
-      dnaTypeHash: 815443803
-  - _hashName: RightOuterBreast
-    _hash: -1043063424
-    _property: 2
-    _valuesX:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
-    _valuesY:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
-    _valuesZ:
-      _val:
-        _value: 1
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators:
-          - _calcOption: 0
-            _dnaName: breastSize
-            _dnaNameHash: -1437215794
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 1.5
-            _initialized: 1
-          - _calcOption: 0
-            _dnaName: upperWeight
-            _dnaNameHash: -1337485543
-            _evaluator:
-              _name: Default
-              _graph:
-                serializedVersion: 2
-                m_Curve:
-                - serializedVersion: 3
-                  time: 0
-                  value: -0.5
-                  inSlope: 0
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 0.5
-                  value: 0
-                  inSlope: 1
-                  outSlope: 1
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                - serializedVersion: 3
-                  time: 1
-                  value: 0.5
-                  inSlope: 1
-                  outSlope: 2
-                  tangentMode: 0
-                  weightedMode: 0
-                  inWeight: 0.33333334
-                  outWeight: 0.33333334
-                m_PreInfinity: 2
-                m_PostInfinity: 2
-                m_RotationOrder: 4
-            _multiplier: 0.1
-            _initialized: 1
-          _aggregationMethod: 1
-      _min: 0.6
-      _max: 1.5
     _umaDNA:
       dnaTypeHash: 815443803
   - _hashName: LeftEye
@@ -1455,6 +781,310 @@ MonoBehaviour:
         _modifiers: []
         _modifyingDNA:
           _dnaEvaluators: []
+          _aggregationMethod: 1
+      _min: 0
+      _max: 0
+    _umaDNA:
+      dnaTypeHash: 815443803
+  - _hashName: LeftEye
+    _hash: 27653119
+    _property: 0
+    _valuesX:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: 0
+      _max: 0
+    _valuesY:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: -0.01
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: -1
+      _max: 1
+    _valuesZ:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: 0
+      _max: 0
+    _umaDNA:
+      dnaTypeHash: 815443803
+  - _hashName: RightEye
+    _hash: -2120937982
+    _property: 0
+    _valuesX:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: 0
+      _max: 0
+    _valuesY:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.01
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: -1
+      _max: 1
+    _valuesZ:
+      _val:
+        _value: 0
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: eyeSpacing
+            _dnaNameHash: -348141931
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0
+                  outWeight: 0
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1
+            _initialized: 1
           _aggregationMethod: 1
       _min: 0
       _max: 0
@@ -13052,27 +12682,18 @@ MonoBehaviour:
       _max: 3
     _umaDNA:
       dnaTypeHash: 815443803
-  - _hashName: LeftEye
-    _hash: 27653119
-    _property: 0
+  - _hashName: LeftOuterBreast
+    _hash: 361754685
+    _property: 2
     _valuesX:
       _val:
-        _value: 0
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators: []
-          _aggregationMethod: 1
-      _min: 0
-      _max: 0
-    _valuesY:
-      _val:
-        _value: 0
+        _value: 1
         _modifiers: []
         _modifyingDNA:
           _dnaEvaluators:
           - _calcOption: 0
-            _dnaName: eyeSpacing
-            _dnaNameHash: -348141931
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
             _evaluator:
               _name: Default
               _graph:
@@ -13107,44 +12728,244 @@ MonoBehaviour:
                   outWeight: 0.33333334
                 m_PreInfinity: 2
                 m_PostInfinity: 2
-                m_RotationOrder: 0
-            _multiplier: -0.01
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
             _initialized: 1
           _aggregationMethod: 1
-      _min: -1
-      _max: 1
-    _valuesZ:
+      _min: 0.6
+      _max: 1.5
+    _valuesY:
       _val:
-        _value: 0
+        _value: 1
         _modifiers: []
         _modifyingDNA:
-          _dnaEvaluators: []
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
+            _initialized: 1
           _aggregationMethod: 1
-      _min: 0
-      _max: 0
+      _min: 0.6
+      _max: 1.5
+    _valuesZ:
+      _val:
+        _value: 1
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: 0.6
+      _max: 1.5
     _umaDNA:
       dnaTypeHash: 815443803
-  - _hashName: RightEye
-    _hash: -2120937982
-    _property: 0
+  - _hashName: RightOuterBreast
+    _hash: -1043063424
+    _property: 2
     _valuesX:
       _val:
-        _value: 0
-        _modifiers: []
-        _modifyingDNA:
-          _dnaEvaluators: []
-          _aggregationMethod: 1
-      _min: 0
-      _max: 0
-    _valuesY:
-      _val:
-        _value: 0
+        _value: 1
         _modifiers: []
         _modifyingDNA:
           _dnaEvaluators:
           - _calcOption: 0
-            _dnaName: eyeSpacing
-            _dnaNameHash: -348141931
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
             _evaluator:
               _name: Default
               _graph:
@@ -13179,20 +13000,229 @@ MonoBehaviour:
                   outWeight: 0.33333334
                 m_PreInfinity: 2
                 m_PostInfinity: 2
-                m_RotationOrder: 0
-            _multiplier: 0.01
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
             _initialized: 1
           _aggregationMethod: 1
-      _min: -1
-      _max: 1
-    _valuesZ:
+      _min: 0.6
+      _max: 1.5
+    _valuesY:
       _val:
-        _value: 0
+        _value: 1
         _modifiers: []
         _modifyingDNA:
-          _dnaEvaluators: []
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
+            _initialized: 1
           _aggregationMethod: 1
-      _min: 0
-      _max: 0
+      _min: 0.6
+      _max: 1.5
+    _valuesZ:
+      _val:
+        _value: 1
+        _modifiers: []
+        _modifyingDNA:
+          _dnaEvaluators:
+          - _calcOption: 0
+            _dnaName: breastSize
+            _dnaNameHash: -1437215794
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 1.5
+            _initialized: 1
+          - _calcOption: 0
+            _dnaName: upperWeight
+            _dnaNameHash: -1337485543
+            _evaluator:
+              _name: Default
+              _graph:
+                serializedVersion: 2
+                m_Curve:
+                - serializedVersion: 3
+                  time: 0
+                  value: -0.5
+                  inSlope: 0
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 0.5
+                  value: 0
+                  inSlope: 1
+                  outSlope: 1
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                - serializedVersion: 3
+                  time: 1
+                  value: 0.5
+                  inSlope: 1
+                  outSlope: 2
+                  tangentMode: 0
+                  weightedMode: 0
+                  inWeight: 0.33333334
+                  outWeight: 0.33333334
+                m_PreInfinity: 2
+                m_PostInfinity: 2
+                m_RotationOrder: 4
+            _multiplier: 0.1
+            _initialized: 1
+          _aggregationMethod: 1
+      _min: 0.6
+      _max: 1.5
     _umaDNA:
       dnaTypeHash: 815443803

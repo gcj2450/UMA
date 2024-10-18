@@ -42,28 +42,20 @@ namespace UMA
 		public void Serialize()
 		{
 			if (humanInfo == null)
-            {
-                humanInfo = new HumanBone[0];
-            }
-
-            if (boneInfo == null)
-            {
-                boneInfo = new SkeletonBone[0];
-            }
-
-            var ms = new MemoryStream();
+				humanInfo = new HumanBone[0];
+			if (boneInfo == null)
+				boneInfo = new SkeletonBone[0];
+			var ms = new MemoryStream();
 			var bn = new BinaryWriter(ms);
 			bn.Write(boneInfo.Length);
-            for (int i = 0; i < boneInfo.Length; i++)
+			foreach(var bi in boneInfo)
 			{
-                SkeletonBone bi = boneInfo[i];
-                Serialize(bn, bi);
+				Serialize(bn, bi);
 			}
 			bn.Write(humanInfo.Length);
-            for (int i = 0; i < humanInfo.Length; i++)
+			foreach (var hi in humanInfo)
 			{
-                HumanBone hi = humanInfo[i];
-                Serialize(bn, hi);
+				Serialize(bn, hi);
 			}
 			if (extendedInfo)
 			{
@@ -282,17 +274,12 @@ namespace UMA
         public string BoneNameFromHumanName(string humanName)
         {
             if (humanInfo == null)
-            {
                 return "";
-            }
 
-            for (int i = 0; i < humanInfo.Length; i++)
+            foreach(HumanBone humanBone in humanInfo)
             {
-                HumanBone humanBone = humanInfo[i];
                 if (humanBone.humanName == humanName)
-                {
                     return humanBone.boneName;
-                }
             }
             return "";
         }

@@ -1,16 +1,16 @@
 using UnityEngine;
 using UnityEditor;
+using UMA;
 using UMA.CharacterSystem;
 using System.Collections.Generic;
 using System.IO;
 using UMA.Examples;
 using UMA.PoseTools;
-using static UMA.UMAData;
-using UnityEngine.Experimental.Rendering;
+using static UMA.UMAPackedRecipeBase;
 
 namespace UMA.Editors
 {
-    public class UMAAvatarLoadSaveMenuItems : Editor
+	public class UMAAvatarLoadSaveMenuItems : Editor
 	{
 		[UnityEditor.MenuItem("GameObject/UMA/Save Mecanim Avatar to Asset (runtime only)")]
 		[MenuItem("UMA/Runtime/Save Selected Avatars Mecanim Avatar to Asset", priority = 1)]
@@ -149,12 +149,9 @@ namespace UMA.Editors
 
 			DestroyImmediate(avatar);
 			var lod = baseObject.GetComponent<UMASimpleLOD>();
-			if (lod != null)
-            {
-                DestroyImmediate(lod);
-            }
+			if (lod != null) DestroyImmediate(lod);
 
-            if (AddStandaloneDNA)
+			if (AddStandaloneDNA)
 			{
 				UMAData uda = baseObject.GetComponent<UMAData>();
 				StandAloneDNA sda = baseObject.AddComponent<UMA.StandAloneDNA>();
@@ -169,25 +166,19 @@ namespace UMA.Editors
 			else
 			{
 				var ud = baseObject.GetComponent<UMAData>();
-				if (ud != null)
-                {
-                    DestroyImmediate(ud);
-                }
-            }
+				if (ud != null) DestroyImmediate(ud);
+			}
 			var ue = baseObject.GetComponent<UMAExpressionPlayer>();
-			if (ue != null)
-            {
-                DestroyImmediate(ue);
-            }
+			if (ue != null) DestroyImmediate(ue);
 
-            baseObject.name = CharName;
+			baseObject.name = CharName;
 			string prefabName = Folder + "/"+CharName+".prefab";
 			prefabName = CustomAssetUtility.UnityFriendlyPath(prefabName);
 			PrefabUtility.SaveAsPrefabAssetAndConnect(baseObject, prefabName, InteractionMode.AutomatedAction);
 		}
 
 
-		[UnityEditor.MenuItem("GameObject/UMA/Save Atlas Textures")]
+		[UnityEditor.MenuItem("GameObject/UMA/Save Atlas Textures (runtime only)")]
 		[MenuItem("CONTEXT/DynamicCharacterAvatar/Save Selected Avatars generated textures to PNG", false, 10)]
 		[MenuItem("UMA/Runtime/Save Selected Avatar Atlas Textures")]
 		public static void SaveSelectedAvatarsPNG()
@@ -219,38 +210,6 @@ namespace UMA.Editors
 			{
 				string basename = System.IO.Path.GetFileNameWithoutExtension(path);
 				string pathname = System.IO.Path.GetDirectoryName(path);
-
-                // Get the UMAMaterials for each atlas.
-
-                UMAData umaData = avatar.umaData;
-                GeneratedMaterials gmatContainer = umaData.generatedMaterials;
-
-				int i = 0;
-				foreach (var gm in gmatContainer.materials)
-				{
-					UMAMaterial umat = gm.umaMaterial;
-					Material mat = gm.skinnedMeshRenderer.sharedMaterials[gm.materialIndex];
-                    Material omat = gm.material;
-					foreach(var tex in umat.GetTexturePropertyNames())
-                    {
-                        Texture texture = mat.GetTexture(tex);
-                        if (texture != null)
-						{
-							string tname = $"{pathname}/{basename}_{i}_{umat.name}{tex}.PNG";
-							try
-							{
-								SaveTexture(texture, tname);
-							}
-                            catch  
-                            { 
-								// Not a readable texture. This is actually OK. Wish isReadable wasn't broken.
-                            }
-                        }
-                    }
-					i++;
-                }
-
-                /*
 				// save the diffuse texture
 				for (int i = 0; i < smr.materials.Length; i++)
 				{
@@ -263,13 +222,10 @@ namespace UMA.Editors
 					{
 						string texname = PathBase + tex + ".PNG";
 						Texture texture = mat.GetTexture(tex);
-						if (texture != null)
-                        {
-                            SaveTexture(texture, texname);
-                        }
-                    }
-				}*/
-            }
+						if (texture != null) SaveTexture(texture, texname);
+					}
+				}
+			}
 		}
 
 		private static void SaveTexture(Texture texture, string diffuseName, bool isNormal = false)
@@ -349,9 +305,6 @@ namespace UMA.Editors
 
 		static public Texture2D GetRTPixels(RenderTexture rt)
 		{
-            // Remember crrently active render texture
-            RenderTexture currentActiveRT = RenderTexture.active;
-
             /// Some goofiness ends up with the texture being too dark unless
             /// I send it to a new render texture.
             RenderTexture outputMap = new RenderTexture(rt.width, rt.height, 32, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB); 
@@ -362,6 +315,8 @@ namespace UMA.Editors
 			Graphics.Blit(rt, outputMap);
 
 
+			// Remember crrently active render texture
+			RenderTexture currentActiveRT = RenderTexture.active;
 
 			// Set the supplied RenderTexture as the active one
 			RenderTexture.active = outputMap;
@@ -411,13 +366,14 @@ namespace UMA.Editors
 
 		private static void SaveTexture2D(Texture2D texture, string textureName)
 		{
-            // ?? texture.isReadable seems to always return true, regardless of whether the texture is readable or not
-            // so we'll just try to encode it and see if it throws an exception
-			// This didn't use to be the case, and may be fixed in various Unity versions...
-            //if (texture.isReadable)
-            {
-                byte[] data = texture.EncodeToPNG();
+			if (texture.isReadable)
+			{
+				byte[] data = texture.EncodeToPNG();
 				System.IO.File.WriteAllBytes(textureName, data);
+			}
+			else
+			{
+				Debug.LogError("Texture: " + texture.name + " is not readable. Skipping.");
 			}
 		}
 
@@ -736,10 +692,8 @@ namespace UMA.Editors
 				if (UAI.IsIndexedType(type))
 				{
 					if (UAI.EvilAddAsset(type, o))
-                    {
-                        added++;
-                    }
-                }
+						added++;
+				}
 			}
 			UAI.ForceSave();
 			EditorUtility.DisplayDialog("Success", added + " item(s) added to Global Library", "OK");
